@@ -53,10 +53,14 @@ public class GraphXings {
         g.addEdge(e9);
         g.addEdge(e10);
         // Run the game with two players.
-        Game game = new Game(g, 5, 4, new RandomPlayer("Random Player"), new BetterPlayer("Better Player"));
-        GameResult res = game.play();
-        // Display the result!
-        System.out.println(res.announceResult());
+
+        int numGames = 5;
+
+        for (var i = 0; i < numGames; i++) {
+            Game game = new Game(g, 5, 4, new RandomPlayer("Player 1"), new RandomPlayer("Player 2"));
+            GameResult res = game.play();
+            System.out.println(res.announceResult());
+        }
 
     }
 }
