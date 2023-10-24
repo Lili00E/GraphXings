@@ -1,6 +1,7 @@
 package GraphXings;
 
 import GraphXings.Algorithms.BetterPlayer;
+import GraphXings.Algorithms.RandomChoicePlayer;
 import GraphXings.Algorithms.RandomPlayer;
 import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
@@ -54,13 +55,29 @@ public class GraphXings {
         g.addEdge(e10);
         // Run the game with two players.
 
-        int numGames = 5;
+        int numGames = 1000;
+        int winScore = 0;
+        int winsPlayer1 = 0;
+        int winsPlayer2 = 0;
+
+        var player1 = new RandomChoicePlayer("Better Random Player", 10);
+        var player2 = new RandomPlayer("Random Player");
 
         for (var i = 0; i < numGames; i++) {
-            Game game = new Game(g, 5, 4, new RandomPlayer("Player 1"), new RandomPlayer("Player 2"));
+            Game game = new Game(g, 5, 4, player1, player2);
             GameResult res = game.play();
-            System.out.println(res.announceResult());
+            int gameWinScore = res.getWinScore();
+            winScore += gameWinScore;
+            if (gameWinScore > 0) {
+                winsPlayer1 += 1;
+            } else if (gameWinScore < 0) {
+                winsPlayer2 += 1;
+            }
+
         }
+        System.out.println(winScore);
+        System.out.println(
+                player1.getName() + " won (" + winsPlayer1 + "), " + player2.getName() + " won (" + winsPlayer2 + ")");
 
     }
 }
