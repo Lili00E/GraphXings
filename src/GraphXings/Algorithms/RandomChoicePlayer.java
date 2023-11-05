@@ -20,21 +20,23 @@ public class RandomChoicePlayer implements Player {
      */
     private String name;
     private int maxPoints;
-    RandomPlayer rp = new RandomPlayer("Lili");
+    private CrossingCalculatorAlgorithm crossingCalculator;
 
     /**
      * Creates a random player with the assigned name.
      * 
      * @param name
      */
-    public RandomChoicePlayer(String name, int maxPointsPerMove) {
+    public RandomChoicePlayer(String name, int maxPointsPerMove, CrossingCalculatorAlgorithm crossingCalculator) {
         this.name = name;
         this.maxPoints = maxPointsPerMove;
+        this.crossingCalculator = crossingCalculator;
     }
 
-    @Override
-    public GameMove maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
-            int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
+    public GameMove
+
+            maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
+                    int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
         return betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, true);
     }
 
@@ -147,8 +149,9 @@ public class RandomChoicePlayer implements Player {
         for (Coordinate c : possibleCoordinates) {
             // place vertex
             newVertexCoordinates.put(u, c);
-            CrossingCalculator cc = new CrossingCalculator(g, newVertexCoordinates);
-            int currentCrossingNum = cc.computeCrossingNumber();
+
+            int currentCrossingNum = crossingCalculator.computeCrossingNumber(g, newVertexCoordinates);
+
             if (currentCrossingNum >= max) {
                 max = currentCrossingNum;
                 coordinateWithMaxCross = c;
@@ -178,8 +181,8 @@ public class RandomChoicePlayer implements Player {
         for (Coordinate c : possibleCoordinates) {
             // place vertex
             newVertexCoordinates.put(u, c);
-            CrossingCalculator cc = new CrossingCalculator(g, newVertexCoordinates);
-            int currentCrossingNum = cc.computeCrossingNumber();
+
+            int currentCrossingNum = crossingCalculator.computeCrossingNumber(g, newVertexCoordinates);
             if (currentCrossingNum < min) {
                 min = currentCrossingNum;
                 coordinateWithMinCross = c;

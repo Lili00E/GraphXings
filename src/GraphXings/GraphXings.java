@@ -1,6 +1,7 @@
 package GraphXings;
 
-import GraphXings.Algorithms.BetterPlayer;
+import GraphXings.Algorithms.BasicCrossingCalculatorAlgorithm;
+import GraphXings.Algorithms.BentleyOttmannCrossingCalculator;
 import GraphXings.Algorithms.RandomChoicePlayer;
 import GraphXings.Algorithms.RandomPlayer;
 import GraphXings.Data.Edge;
@@ -55,16 +56,17 @@ public class GraphXings {
         g.addEdge(e10);
         // Run the game with two players.
 
-        int numGames = 1000;
+        int numGames = 100;
         int winScore = 0;
         int winsPlayer1 = 0;
         int winsPlayer2 = 0;
 
-        var player1 = new RandomChoicePlayer("Better Random Player", 10);
-        var player2 = new RandomPlayer("Random Player");
-
+        var player1 = new RandomPlayer("Random Player");
+        // var player1 = new BetterPlayer("Better Player");
+        var player2 = new RandomChoicePlayer("Better Random Player 2", 2, new BasicCrossingCalculatorAlgorithm());
+        var startTime = System.currentTimeMillis();
         for (var i = 0; i < numGames; i++) {
-            Game game = new Game(g, 5, 4, player1, player2);
+            Game game = new Game(g, 10000, 10000, player1, player2);
             GameResult res = game.play();
             int gameWinScore = res.getWinScore();
             winScore += gameWinScore;
@@ -75,6 +77,8 @@ public class GraphXings {
             }
 
         }
+        var endTime = System.currentTimeMillis();
+        System.out.println("runtime was " + (endTime - startTime) + "ms");
         System.out.println(winScore);
         System.out.println(
                 player1.getName() + " won (" + winsPlayer1 + "), " + player2.getName() + " won (" + winsPlayer2 + ")");
