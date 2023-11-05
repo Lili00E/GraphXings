@@ -91,11 +91,16 @@ public class Game {
         HashMap<Vertex, Coordinate> vertexCoordinates = new HashMap<>();
         HashSet<Vertex> placedVertices = new HashSet<>();
         int[][] usedCoordinates = new int[width][height];
+
+        final long timeStart = System.currentTimeMillis();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 usedCoordinates[x][y] = 0;
             }
         }
+        final long timeEnd = System.currentTimeMillis();
+        System.out.println("initializeCoordinates(): " + (timeEnd - timeStart) + " Millisek.");
+
         while (turn < g.getN()) {
             GameMove newMove;
             Graph copyOfG = g.copy();

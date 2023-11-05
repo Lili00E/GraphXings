@@ -33,11 +33,13 @@ public class RandomChoicePlayer implements Player {
         this.crossingCalculator = crossingCalculator;
     }
 
-    public GameMove
-
-            maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
-                    int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
-        return betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, true);
+    public GameMove maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
+             int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
+        final long timeStart = System.currentTimeMillis();
+        GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, true);
+        final long timeEnd = System.currentTimeMillis();
+        System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek.");
+        return betterMove;
     }
 
     @Override
