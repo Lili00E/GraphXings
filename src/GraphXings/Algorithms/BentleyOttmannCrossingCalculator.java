@@ -1,87 +1,222 @@
 package GraphXings.Algorithms;
 
-import GraphXings.Data.*;
+import bentley_ottmann.Event;
+import bentley_ottmann.Point;
+import bentley_ottmann.Segment;
+import GraphXings.Data.Coordinate;
+import GraphXings.Data.Graph;
+import GraphXings.Data.Vertex;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
-
-class Event implements Comparable<Event> {
-    Rational x;
-    Rational y;
-    Segment segment;
-    int type;
-
-    public Event(Rational x, Rational y, Segment segment, int type) {
-        this.x = x;
-        this.y = y;
-        this.segment = segment;
-        this.type = type;
-    }
-
-    @Override
-    public int compareTo(Event other) {
-        if (this.x.equals(other.x)) {
-            var result = Rational.minus(x, other.x);
-            return result.getP() / result.getQ();
-        }
-        return this.type - other.type;
-    }
-}
+import java.util.*;
 
 /**
  * A class for computing the number of crossings of a partially embedded graph.
  */
 public class BentleyOttmannCrossingCalculator implements CrossingCalculatorAlgorithm {
 
+    private Queue<Event> Q;
+    private NavigableSet<Segment> T;
+    public ArrayList<Point> X;
+    public ArrayList<Segment> segments;
+    public ArrayList<Point> intersections;
+    public ArrayList<Segment> intersectingSegment;
+
+    private boolean reportIntersection(Segment s1, Segment s2, double L) {
+        double x1 = s1.first().getXCoord();
+        double y1 = s1.first().getYCoord();
+        double x2 = s1.second().getXCoord();
+        double y2 = s1.second().getYCoord();
+        double x3 = s2.first().getXCoord();
+        double y3 = s2.first().getYCoord();
+        double x4 = s2.second().getXCoord();
+        double y4 = s2.second().getYCoord();
+        double r = (x2 - x1) * (y4 - y3) - (y2 - y1) * (x4 - x3);
+        if (r != 0) {
+            double t = ((x3 - x1) * (y4 - y3) - (y3 - y1) * (x4 - x3)) / r;
+            double u = ((x3 - x1) * (y2 - y1) - (y3 - y1) * (x2 - x1)) / r;
+            if (t >= 0 && t <= 1 && u >= 0 && u <= 1) {
+                double x_c = x1 + t * (x2 - x1);
+                double y_c = y1 + t * (y2 - y1);
+                if (x_c > L) {
+                    this.Q.add(new Event(new Point(x_c, y_c), new ArrayList<>(Arrays.asList(s1, s2)), 2));
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private boolean removeFutureSegemnts(Segment s1, Segment s2) {
+        for (Event e : this.Q) {
+            if (e.getType() == 2) {
+                if ((e.getSegements().get(0) == s1 && e.getSegements().get(1) == s2)
+                        || (e.getSegements().get(0) == s2 && e.getSegements().get(1) == s1)) {
+                    this.Q.remove(e);
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    private void swap(Segment s1, Segment s2) {
+        this.T.remove(s1);
+        this.T.remove(s2);
+        double value = s1.getValue();
+        s1.set_value(s2.getValue());
+        s2.set_value(value);
+        this.T.add(s1);
+        this.T.add(s2);
+    }
+
+    private void recalculate(double L) {
+        Iterator<Segment> iter = this.T.iterator();
+        while (iter.hasNext()) {
+            iter.next().calculate_value(L);
+        }
+    }
+
+    public int computeIntersections() {
+        int numIntersections = 0;
+        intersectingSegment = new ArrayList<>();
+        while (!this.Q.isEmpty()) {
+            Event e = this.Q.poll();
+            double L = e.getValue();
+            boolean intersection = false;
+            switch (e.getType()) {
+                case 0:
+                    for (Segment s : e.getSegements()) {
+                        this.recalculate(L);
+                        this.T.add(s);
+                        if (this.T.lower(s) != null) {
+                            Segment r = this.T.lower(s);
+                            intersection = this.reportIntersection(r, s, L);
+                        }
+                        if (this.T.higher(s) != null) {
+                            Segment t = this.T.higher(s);
+                            intersection = this.reportIntersection(t, s, L);
+                        }
+                        if (this.T.lower(s) != null && this.T.higher(s) != null) {
+                            Segment r = this.T.lower(s);
+                            Segment t = this.T.higher(s);
+                            this.removeFutureSegemnts(r, t);
+                        }
+                    }
+                    break;
+                case 1:
+                    for (Segment s : e.getSegements()) {
+                        if (this.T.lower(s) != null && this.T.higher(s) != null) {
+                            Segment r = this.T.lower(s);
+                            Segment t = this.T.higher(s);
+                            intersection = this.reportIntersection(r, t, L);
+                        }
+                        this.T.remove(s);
+                    }
+                    break;
+                case 2:
+                    Segment s1 = e.getSegements().get(0);
+                    Segment s2 = e.getSegements().get(1);
+                    this.swap(s1, s2);
+                    if (s1.getValue() < s2.getValue()) {
+                        if (this.T.higher(s1) != null) {
+                            Segment t = this.T.higher(s1);
+                            intersection = this.reportIntersection(t, s1, L);
+                            this.removeFutureSegemnts(t, s2);
+                        }
+                        if (this.T.lower(s2) != null) {
+                            Segment r = this.T.lower(s2);
+                            intersection = this.reportIntersection(r, s2, L);
+                            this.removeFutureSegemnts(r, s1);
+                        }
+                    } else {
+                        if (this.T.higher(s2) != null) {
+                            Segment t = this.T.higher(s2);
+                            intersection = this.reportIntersection(t, s2, L);
+                            this.removeFutureSegemnts(t, s1);
+                        }
+                        if (this.T.lower(s1) != null) {
+                            Segment r = this.T.lower(s1);
+                            intersection = this.reportIntersection(r, s1, L);
+                            this.removeFutureSegemnts(r, s2);
+                        }
+                    }
+
+                    boolean duplicatePoint = false;
+
+                    e.getSegements().forEach((seg) -> {
+                        this.intersectingSegment.add(seg);
+                    });
+                    numIntersections++;
+                    break;
+            }
+
+        }
+        return numIntersections;
+    }
+
+    class EventComparator implements Comparator<Event> {
+        @Override
+        public int compare(Event e1, Event e2) {
+            if (e1.getValue() > e2.getValue()) {
+                return 1;
+            }
+            if (e1.getValue() < e2.getValue()) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+
+    public class SegmentComparator implements Comparator<Segment> {
+        @Override
+        public int compare(Segment s1, Segment s2) {
+            if (s1.getValue() < s2.getValue()) {
+                return 1;
+            }
+            if (s1.getValue() > s2.getValue()) {
+                return -1;
+            }
+            return 0;
+        }
+    }
+
     @Override
     public int computeCrossingNumber(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates) {
 
-        int crossingNumber = 0;
-
-        List<Event> events = new ArrayList<>();
-
-        ArrayList<Segment> segments = new ArrayList<>();
+        // init segments
+        segments = new ArrayList<>();
 
         for (var e : g.getEdges()) {
-            segments.add(new Segment(vertexCoordinates.get(e.getS()), vertexCoordinates.get(e.getT())));
-        }
 
-        for (Segment segment : segments) {
-            events.add(new Event(segment.getStartX(), segment.getEndX(), segment, 1)); // 1 represents the start event
-            events.add(new Event(segment.getEndX(), segment.getEndY(), segment, -1)); // -1 represents the end event
-        }
+            var startCoord = vertexCoordinates.get(e.getS());
+            var endCoord = vertexCoordinates.get(e.getT());
 
-        TreeSet<Segment> activeSegments = new TreeSet<>((seg1, seg2) -> {
-            if (!seg1.getEndY().equals(seg2.getEndY()) && Rational.lesserEqual(seg1.getEndY(), seg2.getEndY())) {
-                return -1;
-            } else if (!seg1.getEndY().equals(seg2.getEndY()) && Rational.lesserEqual(seg2.getEndY(), seg1.getEndY())) {
-                return 1;
+            if (startCoord == null || endCoord == null) {
+                continue;
             }
-            var result = Rational.minus(seg1.getStartX(), seg2.getStartX());
-            return result.getP() / result.getQ();
 
-        });
-
-        events.sort(Event::compareTo);
-
-        for (Event event : events) {
-            if (event.type == 1) { // Start event
-                for (Segment seg : activeSegments) {
-                    if (event.segment != seg) {
-                        if (Segment.intersect(event.segment, seg)) {
-                            crossingNumber++;
-                        }
-                    }
-                }
-                activeSegments.add(event.segment);
-            } else if (event.type == -1) { // End event
-                activeSegments.remove(event.segment);
-            }
+            segments.add(new Segment(new Point(startCoord.getX(), startCoord.getY()),
+                    new Point(endCoord.getX(), endCoord.getY())));
         }
 
-        return crossingNumber;
+        this.Q = new PriorityQueue<>(new EventComparator());
+        this.T = new TreeSet<>(new SegmentComparator());
+        this.X = new ArrayList<>();
+        for (Segment s : segments) {
+            this.Q.add(new Event(s.first(), s, 0));
+            this.Q.add(new Event(s.second(), s, 1));
+        }
+
+        int numCrossings = computeIntersections();
+
+        // int checkCrossings = new CrossingCalculator(g,
+        // vertexCoordinates).computeCrossingNumber();
+        // if (numCrossings != checkCrossings) {
+        // throw new IllegalArgumentException("fakls");
+
+        // }
+        return numCrossings;
+
     }
 
 }

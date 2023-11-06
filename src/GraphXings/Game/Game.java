@@ -2,6 +2,7 @@ package GraphXings.Game;
 
 import GraphXings.Algorithms.CrossingCalculator;
 import GraphXings.Algorithms.Player;
+import GraphXings.Algorithms.Utils;
 import GraphXings.Data.Coordinate;
 import GraphXings.Data.Graph;
 import GraphXings.Data.Vertex;
@@ -60,10 +61,19 @@ public class Game {
      */
     public GameResult play() {
         try {
+            long timeStart = System.currentTimeMillis();
             int crossingsGame1 = playRound(player1, player2);
+            long timeEnd = System.currentTimeMillis();
+            Utils.announceTimedFunction("Playing Initial Round", timeStart, timeEnd);
+            timeStart = System.currentTimeMillis();
             player1.initializeNextRound();
             player2.initializeNextRound();
+            timeEnd = System.currentTimeMillis();
+            Utils.announceTimedFunction("Init Round", timeStart, timeEnd);
+            timeStart = System.currentTimeMillis();
             int crossingsGame2 = playRound(player2, player1);
+            timeEnd = System.currentTimeMillis();
+            Utils.announceTimedFunction("Playing Second Round", timeStart, timeEnd);
             return new GameResult(crossingsGame1, crossingsGame2, player1, player2, false, false);
         } catch (InvalidMoveException ex) {
             if (ex.getCheater().equals(player1)) {
@@ -92,16 +102,17 @@ public class Game {
         HashSet<Vertex> placedVertices = new HashSet<>();
         int[][] usedCoordinates = new int[width][height];
 
-        final long timeStart = System.currentTimeMillis();
+        long timeStart = System.currentTimeMillis();
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 usedCoordinates[x][y] = 0;
             }
         }
-        final long timeEnd = System.currentTimeMillis();
+        long timeEnd = System.currentTimeMillis();
         System.out.println("initializeCoordinates(): " + (timeEnd - timeStart) + " Millisek.");
 
         while (turn < g.getN()) {
+            timeStart = System.currentTimeMillis();
             GameMove newMove;
             Graph copyOfG = g.copy();
             LinkedList<GameMove> copyOfGameMoves = copyGameMoves(gameMoves);
@@ -126,6 +137,8 @@ public class Game {
             placedVertices.add(newMove.getVertex());
             vertexCoordinates.put(newMove.getVertex(), newMove.getCoordinate());
             turn++;
+            timeEnd = System.currentTimeMillis();
+            Utils.announceTimedFunction("Move", timeStart, timeEnd);
         }
         CrossingCalculator cc = new CrossingCalculator(g, vertexCoordinates);
         try {

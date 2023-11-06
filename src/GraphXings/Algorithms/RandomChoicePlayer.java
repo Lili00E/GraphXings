@@ -34,11 +34,12 @@ public class RandomChoicePlayer implements Player {
     }
 
     public GameMove maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
-             int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
+            int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
         final long timeStart = System.currentTimeMillis();
         GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, true);
         final long timeEnd = System.currentTimeMillis();
-        System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek.");
+        System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
+                + crossingCalculator.getClass().toString() + ")");
         return betterMove;
     }
 
@@ -137,9 +138,11 @@ public class RandomChoicePlayer implements Player {
 
         Coordinate coordinateWithMaxCross = possibleCoordinates.get(0);
         int max = 0;
-
+        var startTime = System.currentTimeMillis();
         var newVertexCoordinates = copyVertexCoordinates(vertexCoordinates);
         var newUsedCoordinates = copyUsedCoordinates(usedCoordinates);
+        var endTime = System.currentTimeMillis();
+        Utils.announceTimedFunction("Copy Verticies", startTime, endTime);
         // place remaining verticies randomly
         for (var vertex : g.getVertices()) {
             if (!newVertexCoordinates.containsKey(vertex)) {
@@ -151,8 +154,10 @@ public class RandomChoicePlayer implements Player {
         for (Coordinate c : possibleCoordinates) {
             // place vertex
             newVertexCoordinates.put(u, c);
-
+            startTime = System.currentTimeMillis();
             int currentCrossingNum = crossingCalculator.computeCrossingNumber(g, newVertexCoordinates);
+            endTime = System.currentTimeMillis();
+            Utils.announceTimedFunction("Compute crossings", startTime, endTime);
 
             if (currentCrossingNum >= max) {
                 max = currentCrossingNum;
