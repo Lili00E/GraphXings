@@ -1,7 +1,9 @@
 package GraphXings.Algorithms;
 
 import GraphXings.Data.Coordinate;
+import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
+import GraphXings.Data.Segment;
 import GraphXings.Data.Vertex;
 import GraphXings.Game.GameMove;
 
@@ -21,6 +23,7 @@ public class RandomChoicePlayer implements Player {
     private String name;
     private int maxPoints;
     private CrossingCalculatorAlgorithm crossingCalculator;
+    private int lastCrossingCount = 0;
 
     /**
      * Creates a random player with the assigned name.
@@ -97,16 +100,10 @@ public class RandomChoicePlayer implements Player {
             int width,
             int height, boolean findMax) {
         Random r = new Random();
-        int stillToBePlaced = g.getN() - placedVertices.size();
-        int next = r.nextInt(stillToBePlaced);
-        int skipped = 0;
         Vertex v = null;
+
         for (Vertex u : g.getVertices()) {
             if (!placedVertices.contains(u)) {
-                if (skipped < next) {
-                    skipped++;
-                    continue;
-                }
                 v = u;
                 break;
             }
@@ -116,6 +113,7 @@ public class RandomChoicePlayer implements Player {
         var newUsedCoords = copyUsedCoordinates(usedCoordinates);
         var randomCoords = new ArrayList<Coordinate>();
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
+        lastCrossingCount = crossingCalculator.computeCrossingNumber(g, vertexCoordinates);
         for (var i = 0; i < numPoints; i++) {
             var newCoord = getRandomUnusedCoord(newUsedCoords, r, width, height);
             newUsedCoords[newCoord.getX()][newCoord.getY()] = 1;
@@ -132,64 +130,73 @@ public class RandomChoicePlayer implements Player {
 
     }
 
+    private int calculateNewEdgeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates,
+            Vertex newPlacedVertex) {
+        int crossingNumber = 0;
+        var adjacentEdges = g.getIncidentEdges(newPlacedVertex);
+        for (Edge e1 : adjacentEdges) {
+
+            for (Edge e2 : g.getEdges()) {
+                if (!e1.equals(e2)) {
+                    if (!e1.isAdjacent(e2)) {
+
+                        var startCoord1 = vertexCoordinates.get(e1.getS());
+                        var endCoord1 = vertexCoordinates.get(e1.getT());
+                        var startCoord2 = vertexCoordinates.get(e2.getS());
+                        var endCoord2 = vertexCoordinates.get(e2.getT());
+
+                        if (startCoord1 == null || startCoord2 == null || endCoord1 == null || endCoord2 == null) {
+                            continue;
+                        }
+
+                        Segment s1 = new Segment(startCoord1, endCoord1);
+                        Segment s2 = new Segment(startCoord2, endCoord2);
+                        if (BasicCrossingCalculatorAlgorithm.reportIntersection(s1, s2) != null) {
+                            crossingNumber++;
+                        }
+                    }
+                }
+            }
+        }
+        return crossingNumber / 2;
+    }
+
     private Coordinate getBestOfPlacement(ArrayList<Coordinate> possibleCoordinates,
-            int[][] usedCoordinates, Random r, Graph g,
-            Vertex u, HashMap<Vertex, Coordinate> vertexCoordinates, int width, int height) {
+            int[][] oldUsedCoordinates, Random r, Graph g,
+            Vertex vertexToBePlaced, HashMap<Vertex, Coordinate> oldVertexCoordinates, int width, int height) {
 
         Coordinate coordinateWithMaxCross = possibleCoordinates.get(0);
         int max = 0;
-        var startTime = System.currentTimeMillis();
-        var newVertexCoordinates = copyVertexCoordinates(vertexCoordinates);
-        var newUsedCoordinates = copyUsedCoordinates(usedCoordinates);
-        var endTime = System.currentTimeMillis();
-        Utils.announceTimedFunction("Copy Verticies", startTime, endTime);
-        // place remaining verticies randomly
-        for (var vertex : g.getVertices()) {
-            if (!newVertexCoordinates.containsKey(vertex)) {
-                var randomCoord = getRandomUnusedCoord(newUsedCoordinates, r, width, height);
-                newUsedCoordinates[randomCoord.getX()][randomCoord.getY()] = 1;
-                newVertexCoordinates.put(vertex, randomCoord);
-            }
-        }
+        var newVertexCoordinates = copyVertexCoordinates(oldVertexCoordinates);
+
         for (Coordinate c : possibleCoordinates) {
             // place vertex
-            newVertexCoordinates.put(u, c);
-            startTime = System.currentTimeMillis();
-            int currentCrossingNum = crossingCalculator.computeCrossingNumber(g, newVertexCoordinates);
-            endTime = System.currentTimeMillis();
-            Utils.announceTimedFunction("Compute crossings", startTime, endTime);
+            newVertexCoordinates.put(vertexToBePlaced, c);
+            int currentCrossingNum = calculateNewEdgeCrossings(g, newVertexCoordinates, vertexToBePlaced);
 
             if (currentCrossingNum >= max) {
                 max = currentCrossingNum;
                 coordinateWithMaxCross = c;
             }
         }
-
+        System.out.println("Vertex found with " + max + " crossings if added");
+        lastCrossingCount = max;
         return coordinateWithMaxCross;
     }
 
     private Coordinate getWorstOfPlacement(ArrayList<Coordinate> possibleCoordinates,
             int[][] usedCoordinates, Random r, Graph g,
-            Vertex u, HashMap<Vertex, Coordinate> vertexCoordinates, int width, int height) {
+            Vertex vertexToBePlaced, HashMap<Vertex, Coordinate> vertexCoordinates, int width, int height) {
 
         Coordinate coordinateWithMinCross = possibleCoordinates.get(0);
         int min = 1000000000;
-
         var newVertexCoordinates = copyVertexCoordinates(vertexCoordinates);
-        var newUsedCoordinates = copyUsedCoordinates(usedCoordinates);
-        // place remaining verticies randomly
-        for (var vertex : g.getVertices()) {
-            if (!newVertexCoordinates.containsKey(vertex)) {
-                var randomCoord = getRandomUnusedCoord(newUsedCoordinates, r, width, height);
-                newUsedCoordinates[randomCoord.getX()][randomCoord.getY()] = 1;
-                newVertexCoordinates.put(vertex, randomCoord);
-            }
-        }
+
         for (Coordinate c : possibleCoordinates) {
             // place vertex
-            newVertexCoordinates.put(u, c);
+            newVertexCoordinates.put(vertexToBePlaced, c);
 
-            int currentCrossingNum = crossingCalculator.computeCrossingNumber(g, newVertexCoordinates);
+            int currentCrossingNum = calculateNewEdgeCrossings(g, newVertexCoordinates, vertexToBePlaced);
             if (currentCrossingNum < min) {
                 min = currentCrossingNum;
                 coordinateWithMinCross = c;

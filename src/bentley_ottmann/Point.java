@@ -6,28 +6,28 @@ package bentley_ottmann;
 
 public class Point {
 
-    private double x_coord;
-    private double y_coord;
+    private double x;
+    private double y;
 
     public Point(double x, double y) {
-        this.x_coord = x;
-        this.y_coord = y;
+        this.x = x;
+        this.y = y;
     }
 
     public double getXCoord() {
-        return this.x_coord;
+        return this.x;
     }
 
-    public void set_x_coord(double x_coord) {
-        this.x_coord = x_coord;
+    public void setXCoord(double x) {
+        this.x = x;
     }
 
     public double getYCoord() {
-        return this.y_coord;
+        return this.y;
     }
 
-    public void set_y_coord(double y_coord) {
-        this.y_coord = y_coord;
+    public void setYCoord(double y) {
+        this.y = y;
     }
 
 }

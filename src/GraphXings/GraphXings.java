@@ -18,7 +18,7 @@ public class GraphXings {
     public static void main(String[] args) {
         // Create a graph g. This time it is a 10-cycle!
 
-        int NumNodes = 10;
+        int NumNodes = 10000;
         Vertex first = null;
         Vertex last = null;
 
@@ -46,27 +46,28 @@ public class GraphXings {
         int winScore = 0;
         int winsPlayer1 = 0;
         int winsPlayer2 = 0;
-        BentleyOttmannCrossingCalculator cc = new BentleyOttmannCrossingCalculator();
+        BasicCrossingCalculatorAlgorithm cc = new BasicCrossingCalculatorAlgorithm();
 
-        var player1 = new RandomChoicePlayer("Bentley Ottmann", 2, cc);
+        var player1 = new RandomChoicePlayer("Basic Crossing with Random Choice", 2, cc);
         // var player1 = new BetterPlayer("Better Player");
         var player2 = new RandomPlayer("Random Player");
         var startTime = System.currentTimeMillis();
-        // for (var i = 0; i < numGames; i++) {
-        // Game game = new Game(g, 1000, 1000, player1, player2);
-        // GameResult res = game.play();
-        // int gameWinScore = res.getWinScore();
-        // winScore += gameWinScore;
-        // if (gameWinScore > 0) {
-        // winsPlayer1 += 1;
-        // } else if (gameWinScore < 0) {
-        // winsPlayer2 += 1;
-        // }
+        for (var i = 0; i < numGames; i++) {
+            Game game = new Game(g, 10000, 10000, player1, player2);
+            GameResult res = game.play();
+            int gameWinScore = res.getWinScore();
+            winScore += gameWinScore;
+            if (gameWinScore > 0) {
+                winsPlayer1 += 1;
+            } else if (gameWinScore < 0) {
+                winsPlayer2 += 1;
+            }
 
-        // }
+        }
 
-        var game = new GUIGame(g, 1000, 1000, player1, player2);
-        game.initGameRound();
+        // var game = new GUIGame(g, 1000, 1000, player1, player2);
+
+        // game.initGameRound();
         var endTime = System.currentTimeMillis();
         System.out.println("runtime was " + (endTime - startTime) + "ms");
         System.out.println(winScore);

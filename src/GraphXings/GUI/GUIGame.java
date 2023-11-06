@@ -54,7 +54,7 @@ public class GUIGame extends JFrame {
     int crossingNumber = 0;
 
     LinkedList<GameMove> gameMoves = new LinkedList<>();
-    HashMap<Vertex, Coordinate> vertexCoordinates = new HashMap<>();
+    public HashMap<Vertex, Coordinate> vertexCoordinates = new HashMap<>();
     HashSet<Vertex> placedVertices = new HashSet<>();
     int[][] usedCoordinates;
 
@@ -98,8 +98,10 @@ public class GUIGame extends JFrame {
         getRootPane().registerKeyboardAction(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 try {
                     playSingleTurn(player1, player2);
+
                     repaint();
 
                 } catch (InvalidMoveException ex) {
@@ -126,8 +128,6 @@ public class GUIGame extends JFrame {
 
     private ArrayList<Segment> getSegments() {
         var segments = new ArrayList<Segment>();
-
-        System.err.println(vertexCoordinates.size());
         for (var e : graph.getEdges()) {
 
             var startCoord = vertexCoordinates.get(e.getS());
@@ -269,7 +269,7 @@ public class GUIGame extends JFrame {
             vertexCoordinates.put(newMove.getVertex(), newMove.getCoordinate());
             turn++;
             timeEnd = System.currentTimeMillis();
-            Utils.announceTimedFunction("Move", timeStart, timeEnd);
+
         }
         CrossingCalculator cc = new CrossingCalculator(graph, vertexCoordinates);
         try {
@@ -371,11 +371,11 @@ public class GUIGame extends JFrame {
     public void paint(Graphics g) {
 
         super.paint(g);
-        g.clearRect(0, 0, WIDTH, HEIGHT);
+        g.clearRect(0, 0, width, height);
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-        var vCoords = vertexCoordinates;
+
         for (Segment s : this.getSegments()) {
             Line2D.Double segment = new Line2D.Double(s.first().getXCoord(), s.first().getYCoord(),
                     s.second().getXCoord(), s.second().getYCoord());
@@ -393,35 +393,20 @@ public class GUIGame extends JFrame {
             // g2.fill(point);
             g2.draw(point);
         }
-        var cc = new BentleyOttmannCrossingCalculator();
 
+        var cc = new BasicCrossingCalculatorAlgorithm();
         cc.computeCrossingNumber(graph, vertexCoordinates);
 
-        System.out.println("BOC " + cc.X.size());
+        for (var coords : cc.intersectionPoints) {
 
-        var bcc = new BasicCrossingCalculatorAlgorithm();
-
-        int bccCrossingNumber = bcc.computeCrossingNumber(graph, vertexCoordinates);
-
-        System.out.println("BCC " + bccCrossingNumber);
-
-        for (var coords : cc.X) {
-
-            double vertexSize = 8.0;
+            double vertexSize = 10.0;
 
             double new_x = coords.getXCoord() - vertexSize / 2.0;
             double new_y = coords.getYCoord() - vertexSize / 2.0;
             Ellipse2D.Double point = new Ellipse2D.Double(new_x, new_y, vertexSize, vertexSize);
-            g2.setPaint(Color.BLUE);
+            g2.setPaint(Color.GREEN);
             g2.fill(point);
             g2.draw(point);
-        }
-
-        for (Segment s : cc.intersectingSegment) {
-            Line2D.Double segment = new Line2D.Double(s.first().getXCoord(), s.first().getYCoord(),
-                    s.second().getXCoord(), s.second().getYCoord());
-            g2.setPaint(Color.RED);
-            g2.draw(segment);
         }
 
     }

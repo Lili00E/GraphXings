@@ -138,7 +138,6 @@ public class Game {
             vertexCoordinates.put(newMove.getVertex(), newMove.getCoordinate());
             turn++;
             timeEnd = System.currentTimeMillis();
-            Utils.announceTimedFunction("Move", timeStart, timeEnd);
         }
         CrossingCalculator cc = new CrossingCalculator(g, vertexCoordinates);
         try {
