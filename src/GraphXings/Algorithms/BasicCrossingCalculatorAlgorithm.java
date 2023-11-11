@@ -71,7 +71,7 @@ public class BasicCrossingCalculatorAlgorithm implements CrossingCalculatorAlgor
                         Segment s1 = new Segment(startCoord1, endCoord1);
                         Segment s2 = new Segment(startCoord2, endCoord2);
                         var intersectionPoint = BasicCrossingCalculatorAlgorithm.reportIntersection(s1, s2);
-                        if (intersectionPoint != null) {
+                        if (intersectionPoint != null) { // if(!Segment.intersect(s1, s2))
                             crossingNumber++;
                             intersectionPoints.add(intersectionPoint);
                         }

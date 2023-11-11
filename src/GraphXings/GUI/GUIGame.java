@@ -5,13 +5,15 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.*;
 import javax.swing.*;
+import javax.xml.crypto.Data;
 
 import GraphXings.Data.Vertex;
 import GraphXings.Game.GameMove;
 import GraphXings.Game.GameResult;
 import GraphXings.Game.InvalidMoveException;
-import bentley_ottmann.Segment;
+
 import bentley_ottmann.Point;
+import GraphXings.GraphXings;
 import GraphXings.Algorithms.BasicCrossingCalculatorAlgorithm;
 import GraphXings.Algorithms.BentleyOttmannCrossingCalculator;
 import GraphXings.Algorithms.CrossingCalculator;
@@ -21,7 +23,7 @@ import GraphXings.Algorithms.Utils;
 import GraphXings.Data.Coordinate;
 import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
-import GraphXings.Data.Vertex;
+import GraphXings.Data.Segment;
 
 /**
  * Created by valen_000 on 15. 5. 2017.
@@ -40,7 +42,7 @@ public class GUIGame extends JFrame {
     /**
      * The graph to be drawn.
      */
-    private Graph graph;
+    public Graph graph;
     /**
      * The first player.
      */
@@ -114,20 +116,20 @@ public class GUIGame extends JFrame {
         setVisible(true);
     }
 
-    public void initGameRound() {
-        gameMoves = new LinkedList<>();
-        vertexCoordinates = new HashMap<>();
-        placedVertices = new HashSet<>();
-        usedCoordinates = new int[width][height];
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                usedCoordinates[x][y] = 0;
-            }
-        }
-    }
+    // public void initGameRound() {
+    // gameMoves = new LinkedList<>();
+    // vertexCoordinates = new HashMap<>();
+    // placedVertices = new HashSet<>();
+    // usedCoordinates = new int[width][height];
+    // for (int x = 0; x < width; x++) {
+    // for (int y = 0; y < height; y++) {
+    // usedCoordinates[x][y] = 0;
+    // }
+    // }
+    // }
 
-    private ArrayList<Segment> getSegments() {
-        var segments = new ArrayList<Segment>();
+    private ArrayList<bentley_ottmann.Segment> getSegments() {
+        var segments = new ArrayList<bentley_ottmann.Segment>();
         for (var e : graph.getEdges()) {
 
             var startCoord = vertexCoordinates.get(e.getS());
@@ -137,7 +139,7 @@ public class GUIGame extends JFrame {
                 continue;
             }
 
-            segments.add(new Segment(new Point(startCoord.getX(), startCoord.getY()),
+            segments.add(new bentley_ottmann.Segment(new Point(startCoord.getX(), startCoord.getY()),
                     new Point(endCoord.getX(), endCoord.getY())));
         }
         return segments;
@@ -376,7 +378,7 @@ public class GUIGame extends JFrame {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
 
-        for (Segment s : this.getSegments()) {
+        for (bentley_ottmann.Segment s : this.getSegments()) {
             Line2D.Double segment = new Line2D.Double(s.first().getXCoord(), s.first().getYCoord(),
                     s.second().getXCoord(), s.second().getYCoord());
             g2.draw(segment);
@@ -395,6 +397,7 @@ public class GUIGame extends JFrame {
         }
 
         var cc = new BasicCrossingCalculatorAlgorithm();
+
         cc.computeCrossingNumber(graph, vertexCoordinates);
 
         for (var coords : cc.intersectionPoints) {
@@ -407,6 +410,40 @@ public class GUIGame extends JFrame {
             g2.setPaint(Color.GREEN);
             g2.fill(point);
             g2.draw(point);
+        }
+
+        for (Edge e1 : graph.getEdges()) {
+            for (Edge e2 : graph.getEdges()) {
+                if (!e1.equals(e2)) {
+                    if (!e1.isAdjacent(e2)) {
+
+                        var startCoord1 = vertexCoordinates.get(e1.getS());
+                        var endCoord1 = vertexCoordinates.get(e1.getT());
+                        var startCoord2 = vertexCoordinates.get(e2.getS());
+                        var endCoord2 = vertexCoordinates.get(e2.getT());
+
+                        if (startCoord1 == null || startCoord2 == null || endCoord1 == null || endCoord2 == null) {
+                            continue;
+                        }
+
+                        var s1 = new Segment(startCoord1,
+                                endCoord1);
+                        var s2 = new Segment(startCoord2,
+                                endCoord2);
+                        if (Segment.intersect(s1, s2)) {
+                            Line2D.Double segment = new Line2D.Double(RationalComputer.getValue(s1.getStartX()),
+                                    RationalComputer.getValue(s1.getStartY()),
+                                    RationalComputer.getValue(s1.getEndX()), RationalComputer.getValue(s1.getEndY()));
+                            Line2D.Double segment2 = new Line2D.Double(RationalComputer.getValue(s2.getStartX()),
+                                    RationalComputer.getValue(s2.getStartY()),
+                                    RationalComputer.getValue(s2.getEndX()), RationalComputer.getValue(s2.getEndY()));
+                            g2.setPaint(Color.MAGENTA);
+                            g2.draw(segment);
+                            g2.draw(segment2);
+                        }
+                    }
+                }
+            }
         }
 
     }
