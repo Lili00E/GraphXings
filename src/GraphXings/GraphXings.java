@@ -43,31 +43,31 @@ public class GraphXings {
         final long timeEnd = System.currentTimeMillis();
         System.out.println("InitializeVertices: " + (timeEnd - timeStart) + " Millisek.");
 
-        int numGames = 1;
+        int numGames = 100;
         int winScore = 0;
         int winsPlayer1 = 0;
         int winsPlayer2 = 0;
         BasicCrossingCalculatorAlgorithm cc = new BasicCrossingCalculatorAlgorithm();
 
-        var player1 = new RandomChoicePlayer("Basic Crossing with Random Choice", 2, cc);
+        var player1 = new RandomChoicePlayer("Basic Crossing with Random Choice", 50, cc);
         // var player1 = new BetterPlayer("Better Player");
         var player2 = new RandomPlayer("Random Player");
         var startTime = System.currentTimeMillis();
-        // for (var i = 0; i < numGames; i++) {
-        // Game game = new Game(g, 10000, 10000, player1, player2);
-        // GameResult res = game.play();
-        // int gameWinScore = res.getWinScore();
-        // winScore += gameWinScore;
-        // if (gameWinScore > 0) {
-        // winsPlayer1 += 1;
-        // } else if (gameWinScore < 0) {
-        // winsPlayer2 += 1;
-        // }
+        for (var i = 0; i < numGames; i++) {
+            Game game = new Game(g, 1000, 1000, player1, player2);
+            GameResult res = game.play();
+            int gameWinScore = res.getWinScore();
+            winScore += gameWinScore;
+            if (gameWinScore > 0) {
+                winsPlayer1 += 1;
+            } else if (gameWinScore < 0) {
+                winsPlayer2 += 1;
+            }
 
-        // }
+        }
         // new GUIGame(g, 1000, 1000, player1, player2);
 
-        var game = new GUIGame(g, 1000, 1000, player1, player2);
+        // var game = new GUIGame(g, 1000, 1000, player1, player2);
 
         // game.initGameRound();
         var endTime = System.currentTimeMillis();

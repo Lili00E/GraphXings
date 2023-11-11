@@ -67,6 +67,39 @@ public class RandomChoicePlayer implements Player {
 
     }
 
+    private Coordinate getInterval(int[][] usedCoordinates, int width, int height, Graph g, double intervalXStartValue,
+            Random r) {
+
+        double distance = Math.abs(intervalXStartValue - (1 - intervalXStartValue));
+
+        var c = new Coordinate(0, 0);
+        int sizeOfField = (int) ((distance * width) * (distance * height));
+        if (sizeOfField < g.getN()) {
+            long intervalLength = Math.round(Math.sqrt(g.getN()));
+            c = new Coordinate((int) ((height / 2) - (intervalLength / 2)),
+                    (int) ((height / 2) + (intervalLength / 2)));
+        }
+    }
+
+    private Coordinate getNotRandomUnusedCoord(int[][] usedCoordinates, Random r, int width, int height,
+            boolean findMax) {
+        var c = new Coordinate(0, 0);
+        double intervalXStartValue = 0.4;
+
+        // int sizeOfField = (int) ((distance * width) * (distance * height));
+        do {
+            if (findMax) {
+                c = new Coordinate(r.nextInt((int) (0.9 * width), width),
+                        r.nextInt((int) (0.9 * height), height));
+            } else {
+                c = new Coordinate(r.nextInt((int) (0.4 * width), (int) (0.6 * width)),
+                        r.nextInt((int) (0.4 * height), (int) (0.6 * height)));
+            }
+        } while (usedCoordinates[c.getX()][c.getY()] != 0);
+
+        return c;
+    }
+
     private int[][] copyUsedCoordinates(int[][] usedCoordinates) {
         int[][] copy = new int[usedCoordinates.length][usedCoordinates[0].length];
         for (int i = 0; i < usedCoordinates.length; i++) {
@@ -115,7 +148,7 @@ public class RandomChoicePlayer implements Player {
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         lastCrossingCount = crossingCalculator.computeCrossingNumber(g, vertexCoordinates);
         for (var i = 0; i < numPoints; i++) {
-            var newCoord = getRandomUnusedCoord(newUsedCoords, r, width, height);
+            var newCoord = getNotRandomUnusedCoord(newUsedCoords, r, width, height, findMax);
             newUsedCoords[newCoord.getX()][newCoord.getY()] = 1;
             randomCoords.add(newCoord);
         }
