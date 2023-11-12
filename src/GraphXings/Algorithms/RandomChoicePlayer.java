@@ -67,33 +67,39 @@ public class RandomChoicePlayer implements Player {
 
     }
 
-    private Coordinate getInterval(int[][] usedCoordinates, int width, int height, Graph g, double intervalXStartValue,
-            Random r) {
-
-        double distance = Math.abs(intervalXStartValue - (1 - intervalXStartValue));
-
-        var c = new Coordinate(0, 0);
-        int sizeOfField = (int) ((distance * width) * (distance * height));
-        if (sizeOfField < g.getN()) {
-            long intervalLength = Math.round(Math.sqrt(g.getN()));
-            c = new Coordinate((int) ((height / 2) - (intervalLength / 2)),
-                    (int) ((height / 2) + (intervalLength / 2)));
-        }
+    private Coordinate getAlternativeInterval(int height, int numNodes) {
+        long intervalLength = Math.round(Math.sqrt(numNodes));
+        return new Coordinate((int) ((height / 2) - (intervalLength / 2)),
+                (int) ((height / 2) + (intervalLength / 2)));
     }
 
     private Coordinate getNotRandomUnusedCoord(int[][] usedCoordinates, Random r, int width, int height,
-            boolean findMax) {
-        var c = new Coordinate(0, 0);
-        double intervalXStartValue = 0.4;
+            boolean findMax, Graph g) {
+        double maxFieldSizeFactor = 0.9;
+        double minFieldSizeFactor = 0.4;
+        Coordinate c;
 
-        // int sizeOfField = (int) ((distance * width) * (distance * height));
         do {
             if (findMax) {
-                c = new Coordinate(r.nextInt((int) (0.9 * width), width),
-                        r.nextInt((int) (0.9 * height), height));
+                double maxFieldLength = 1 - maxFieldSizeFactor;
+                int sizeOfField = (int) ((maxFieldLength * width) * (maxFieldLength * height));
+
+                if (sizeOfField < g.getN()) {
+                    c = getAlternativeInterval(height, g.getN());
+                } else {
+                    c = new Coordinate(r.nextInt((int) (maxFieldSizeFactor * width), width),
+                            r.nextInt((int) (maxFieldSizeFactor * height), height));
+                }
             } else {
-                c = new Coordinate(r.nextInt((int) (0.4 * width), (int) (0.6 * width)),
-                        r.nextInt((int) (0.4 * height), (int) (0.6 * height)));
+                double minFieldLength = Math.abs(minFieldSizeFactor - (1 - minFieldSizeFactor));
+                int sizeOfField = (int) ((minFieldLength * width) * (minFieldLength * height));
+
+                if (sizeOfField < g.getN()) {
+                    c = getAlternativeInterval(height, g.getN());
+                } else {
+                    c = new Coordinate(r.nextInt((int) (minFieldSizeFactor * width), (int) ((1 - minFieldSizeFactor) * width)),
+                            r.nextInt((int) (minFieldSizeFactor * height), (int) ((1 - minFieldSizeFactor) * height)));
+                }
             }
         } while (usedCoordinates[c.getX()][c.getY()] != 0);
 
@@ -148,7 +154,7 @@ public class RandomChoicePlayer implements Player {
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         lastCrossingCount = crossingCalculator.computeCrossingNumber(g, vertexCoordinates);
         for (var i = 0; i < numPoints; i++) {
-            var newCoord = getNotRandomUnusedCoord(newUsedCoords, r, width, height, findMax);
+            var newCoord = getNotRandomUnusedCoord(newUsedCoords, r, width, height, findMax, g);
             newUsedCoords[newCoord.getX()][newCoord.getY()] = 1;
             randomCoords.add(newCoord);
         }
