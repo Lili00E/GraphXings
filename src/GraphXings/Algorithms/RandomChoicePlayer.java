@@ -11,9 +11,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.Set;
+import java.util.concurrent.*;
 
 public class RandomChoicePlayer implements Player {
 
@@ -24,32 +23,117 @@ public class RandomChoicePlayer implements Player {
     private int maxPoints;
     private CrossingCalculatorAlgorithm crossingCalculator;
     private int lastCrossingCount = 0;
+    private int timoutMilliseconds = 0;
 
     /**
      * Creates a random player with the assigned name.
      * 
      * @param name
      */
-    public RandomChoicePlayer(String name, int maxPointsPerMove, CrossingCalculatorAlgorithm crossingCalculator) {
+    public RandomChoicePlayer(String name, int maxPointsPerMove, CrossingCalculatorAlgorithm crossingCalculator,
+            int timeoutSeconds) {
         this.name = name;
         this.maxPoints = maxPointsPerMove;
         this.crossingCalculator = crossingCalculator;
+        this.timoutMilliseconds = timeoutSeconds;
     }
 
     public GameMove maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
             int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
-        final long timeStart = System.currentTimeMillis();
-        GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, true);
-        final long timeEnd = System.currentTimeMillis();
-        System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
-                + crossingCalculator.getClass().toString() + ")");
-        return betterMove;
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        // Your task to be executed
+        Callable<GameMove> task = () -> {
+            // Simulate a long-running task
+            final long timeStart = System.currentTimeMillis();
+
+            GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height,
+                    true);
+            final long timeEnd = System.currentTimeMillis();
+            System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
+                    + crossingCalculator.getClass().toString() + ")");
+            return betterMove;
+        };
+
+        // Submit the task to the executor
+        Future<GameMove> future = executorService.submit(task);
+        GameMove move = null;
+        try {
+            // Set a timeout for the task
+            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+        } catch (TimeoutException e) {
+            System.out.println("TIMOUT, getting random move");
+            move = getRandomGameMove(g, usedCoordinates, placedVertices, width, height);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Handle other exceptions
+        } finally {
+            // Shutdown the executor
+            executorService.shutdown();
+        }
+        return move;
+    }
+
+    private GameMove getRandomGameMove(Graph g, int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width,
+            int height) {
+        Random r = new Random();
+        int stillToBePlaced = g.getN() - placedVertices.size();
+        int next = r.nextInt(stillToBePlaced);
+        int skipped = 0;
+        Vertex v = null;
+        for (Vertex u : g.getVertices()) {
+            if (!placedVertices.contains(u)) {
+                if (skipped < next) {
+                    skipped++;
+                    continue;
+                }
+                v = u;
+                break;
+            }
+        }
+        Coordinate c = new Coordinate(0, 0);
+        do {
+            c = new Coordinate(r.nextInt(width), r.nextInt(height));
+        } while (usedCoordinates[c.getX()][c.getY()] != 0);
+        return new GameMove(v, c);
     }
 
     @Override
     public GameMove minimizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
             int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
-        return betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, false);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        // Your task to be executed
+        Callable<GameMove> task = () -> {
+            // Simulate a long-running task
+            final long timeStart = System.currentTimeMillis();
+
+            GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height,
+                    false);
+            final long timeEnd = System.currentTimeMillis();
+            System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
+                    + crossingCalculator.getClass().toString() + ")");
+            return betterMove;
+        };
+
+        // Submit the task to the executor
+        Future<GameMove> future = executorService.submit(task);
+        GameMove move = null;
+        try {
+            // Set a timeout for the task
+            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+        } catch (TimeoutException e) {
+            System.out.println("TIMOUT, getting random move");
+            move = getRandomGameMove(g, usedCoordinates, placedVertices, width, height);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Handle other exceptions
+        } finally {
+            // Shutdown the executor
+            executorService.shutdown();
+        }
+        return move;
+
     }
 
     @Override
@@ -97,7 +181,8 @@ public class RandomChoicePlayer implements Player {
                 if (sizeOfField < g.getN()) {
                     c = getAlternativeInterval(height, g.getN());
                 } else {
-                    c = new Coordinate(r.nextInt((int) (minFieldSizeFactor * width), (int) ((1 - minFieldSizeFactor) * width)),
+                    c = new Coordinate(
+                            r.nextInt((int) (minFieldSizeFactor * width), (int) ((1 - minFieldSizeFactor) * width)),
                             r.nextInt((int) (minFieldSizeFactor * height), (int) ((1 - minFieldSizeFactor) * height)));
                 }
             }
