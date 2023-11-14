@@ -7,6 +7,9 @@ import GraphXings.Data.Segment;
 import GraphXings.Data.Vertex;
 import GraphXings.Game.GameMove;
 
+import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -191,6 +194,22 @@ public class RandomChoicePlayer implements Player {
         return c;
     }
 
+    private Vertex chooseNextVertex(Graph g, HashSet<Vertex> placedVertices){
+        Vertex alternativeVertexNoEdge = new Vertex("new");
+        for(Vertex v: g.getVertices()){
+            if (!placedVertices.contains(v)) {
+               Stream<Edge> Edges = StreamSupport.stream(g.getIncidentEdges(v).spliterator(),false);
+               if (Edges.count() >= 1){
+                   System.out.println("Vertex with edge used");
+                   return v;
+               } else {
+                   alternativeVertexNoEdge = v;
+               }
+            }
+        }
+        return alternativeVertexNoEdge;
+    }
+
     private int[][] copyUsedCoordinates(int[][] usedCoordinates) {
         int[][] copy = new int[usedCoordinates.length][usedCoordinates[0].length];
         for (int i = 0; i < usedCoordinates.length; i++) {
@@ -225,6 +244,7 @@ public class RandomChoicePlayer implements Player {
             int height, boolean findMax) {
         Random r = new Random();
         Vertex v = null;
+//        Vertex v = chooseNextVertex(g, placedVertices);
 
         for (Vertex u : g.getVertices()) {
             if (!placedVertices.contains(u)) {
