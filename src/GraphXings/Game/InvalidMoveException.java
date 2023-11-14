@@ -2,14 +2,31 @@ package GraphXings.Game;
 
 import GraphXings.Algorithms.Player;
 
-public class InvalidMoveException extends Exception {
+/**
+ * An exception that can be thrown when an illegal move is detected.
+ */
+public class InvalidMoveException extends Exception
+{
+    /**
+     * The cheating player.
+     */
     private Player cheater;
 
-    public InvalidMoveException(Player cheater) {
+    /**
+     * Constructor that creates an InvalidMoveException.
+     * @param cheater The cheating player.
+     */
+    protected InvalidMoveException(Player cheater)
+    {
         this.cheater = cheater;
     }
 
-    public Player getCheater() {
+    /**
+     * Gets the player that cheated.
+     * @return The cheating player.
+     */
+    public Player getCheater()
+    {
         return cheater;
     }
 }

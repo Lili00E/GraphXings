@@ -140,7 +140,7 @@ public class RandomChoicePlayer implements Player {
     }
 
     @Override
-    public void initializeNextRound() {
+    public void initializeNextRound(Graph g, int i, int j, Role r) {
 
     }
 
