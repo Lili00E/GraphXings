@@ -2,9 +2,23 @@ package GraphXings.Gruppe5;
 
 import GraphXings.Algorithms.Player;
 import GraphXings.Data.*;
+
+import GraphXings.Data.Coordinate;
+import GraphXings.Data.Edge;
+import GraphXings.Data.Graph;
+import GraphXings.Data.Segment;
+import GraphXings.Data.Vertex;
 import GraphXings.Game.GameMove;
 
 import java.util.*;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.*;
 
 public class RandomChoicePlayer implements Player {
 
@@ -15,36 +29,121 @@ public class RandomChoicePlayer implements Player {
     private int maxPoints;
     private CrossingCalculatorAlgorithm crossingCalculator;
     private int lastCrossingCount = 0;
+    private int timoutMilliseconds = 0;
 
     /**
      * Creates a random player with the assigned name.
      * 
      * @param name
      */
-    public RandomChoicePlayer(String name, int maxPointsPerMove, CrossingCalculatorAlgorithm crossingCalculator) {
+    public RandomChoicePlayer(String name, int maxPointsPerMove, CrossingCalculatorAlgorithm crossingCalculator,
+            int timeoutSeconds) {
         this.name = name;
         this.maxPoints = maxPointsPerMove;
         this.crossingCalculator = crossingCalculator;
+        this.timoutMilliseconds = timeoutSeconds;
     }
 
     public GameMove maximizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
             int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
-        final long timeStart = System.currentTimeMillis();
-        GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, true);
-        final long timeEnd = System.currentTimeMillis();
-        System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
-                + crossingCalculator.getClass().toString() + ")");
-        return betterMove;
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        // Your task to be executed
+        Callable<GameMove> task = () -> {
+            // Simulate a long-running task
+            final long timeStart = System.currentTimeMillis();
+
+            GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height,
+                    true);
+            final long timeEnd = System.currentTimeMillis();
+            // System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
+            // + crossingCalculator.getClass().toString() + ")");
+            return betterMove;
+        };
+
+        // Submit the task to the executor
+        Future<GameMove> future = executorService.submit(task);
+        GameMove move = null;
+        try {
+            // Set a timeout for the task
+            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+        } catch (TimeoutException e) {
+            System.out.println("TIMOUT, getting random move");
+            move = getRandomGameMove(g, usedCoordinates, placedVertices, width, height);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Handle other exceptions
+        } finally {
+            // Shutdown the executor
+            executorService.shutdown();
+        }
+        return move;
+    }
+
+    private GameMove getRandomGameMove(Graph g, int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width,
+            int height) {
+        Random r = new Random();
+        int stillToBePlaced = g.getN() - placedVertices.size();
+        int next = r.nextInt(stillToBePlaced);
+        int skipped = 0;
+        Vertex v = null;
+        for (Vertex u : g.getVertices()) {
+            if (!placedVertices.contains(u)) {
+                if (skipped < next) {
+                    skipped++;
+                    continue;
+                }
+                v = u;
+                break;
+            }
+        }
+        Coordinate c = new Coordinate(0, 0);
+        do {
+            c = new Coordinate(r.nextInt(width), r.nextInt(height));
+        } while (usedCoordinates[c.getX()][c.getY()] != 0);
+        return new GameMove(v, c);
     }
 
     @Override
     public GameMove minimizeCrossings(Graph g, HashMap<Vertex, Coordinate> vertexCoordinates, List<GameMove> gameMoves,
             int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height) {
-        return betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height, false);
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        // Your task to be executed
+        Callable<GameMove> task = () -> {
+            // Simulate a long-running task
+            final long timeStart = System.currentTimeMillis();
+
+            GameMove betterMove = betterMove(g, usedCoordinates, vertexCoordinates, placedVertices, width, height,
+                    false);
+            final long timeEnd = System.currentTimeMillis();
+            // System.out.println("betterMove(): " + (timeEnd - timeStart) + " Millisek. ("
+            // + crossingCalculator.getClass().toString() + ")");
+            return betterMove;
+        };
+
+        // Submit the task to the executor
+        Future<GameMove> future = executorService.submit(task);
+        GameMove move = null;
+        try {
+            // Set a timeout for the task
+            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+        } catch (TimeoutException e) {
+            System.out.println("TIMOUT, getting random move");
+            move = getRandomGameMove(g, usedCoordinates, placedVertices, width, height);
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Handle other exceptions
+        } finally {
+            // Shutdown the executor
+            executorService.shutdown();
+        }
+        return move;
+
     }
 
     @Override
-    public void initializeNextRound() {
+    public void initializeNextRound(Graph g, int i, int j, Role r) {
 
     }
 
@@ -56,6 +155,62 @@ public class RandomChoicePlayer implements Player {
         } while (usedCoordinates[c.getX()][c.getY()] != 0);
         return c;
 
+    }
+
+    private Coordinate getAlternativeInterval(int height, int numNodes) {
+        long intervalLength = Math.round(Math.sqrt(numNodes));
+        return new Coordinate((int) ((height / 2) - (intervalLength / 2)),
+                (int) ((height / 2) + (intervalLength / 2)));
+    }
+
+    private Coordinate getNotRandomUnusedCoord(int[][] usedCoordinates, Random r, int width, int height,
+            boolean findMax, Graph g) {
+        double maxFieldSizeFactor = 0.9;
+        double minFieldSizeFactor = 0.4;
+        Coordinate c;
+
+        do {
+            if (findMax) {
+                double maxFieldLength = 1 - maxFieldSizeFactor;
+                int sizeOfField = (int) ((maxFieldLength * width) * (maxFieldLength * height));
+
+                if (sizeOfField < g.getN()) {
+                    c = getAlternativeInterval(height, g.getN());
+                } else {
+                    c = new Coordinate(r.nextInt((int) (maxFieldSizeFactor * width), width),
+                            r.nextInt((int) (maxFieldSizeFactor * height), height));
+                }
+            } else {
+                double minFieldLength = Math.abs(minFieldSizeFactor - (1 - minFieldSizeFactor));
+                int sizeOfField = (int) ((minFieldLength * width) * (minFieldLength * height));
+
+                if (sizeOfField < g.getN()) {
+                    c = getAlternativeInterval(height, g.getN());
+                } else {
+                    c = new Coordinate(
+                            r.nextInt((int) (minFieldSizeFactor * width), (int) ((1 - minFieldSizeFactor) * width)),
+                            r.nextInt((int) (minFieldSizeFactor * height), (int) ((1 - minFieldSizeFactor) * height)));
+                }
+            }
+        } while (usedCoordinates[c.getX()][c.getY()] != 0);
+
+        return c;
+    }
+
+    private Vertex chooseNextVertex(Graph g, HashSet<Vertex> placedVertices) {
+        Vertex alternativeVertexNoEdge = new Vertex("new");
+        for (Vertex v : g.getVertices()) {
+            if (!placedVertices.contains(v)) {
+                Stream<Edge> Edges = StreamSupport.stream(g.getIncidentEdges(v).spliterator(), false);
+                if (Edges.count() >= 1) {
+                    // System.out.println("Vertex with edge used");
+                    return v;
+                } else {
+                    alternativeVertexNoEdge = v;
+                }
+            }
+        }
+        return alternativeVertexNoEdge;
     }
 
     private int[][] copyUsedCoordinates(int[][] usedCoordinates) {
@@ -91,14 +246,15 @@ public class RandomChoicePlayer implements Player {
             int width,
             int height, boolean findMax) {
         Random r = new Random();
-        Vertex v = null;
+        // Vertex v = null;
+        Vertex v = chooseNextVertex(g, placedVertices);
 
-        for (Vertex u : g.getVertices()) {
-            if (!placedVertices.contains(u)) {
-                v = u;
-                break;
-            }
-        }
+        // for (Vertex u : g.getVertices()) {
+        // if (!placedVertices.contains(u)) {
+        // v = u;
+        // break;
+        // }
+        // }
 
         int maxAvailableCoords = (width * height) - placedVertices.size();
         var newUsedCoords = copyUsedCoordinates(usedCoordinates);
@@ -106,7 +262,7 @@ public class RandomChoicePlayer implements Player {
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         lastCrossingCount = crossingCalculator.computeCrossingNumber(g, vertexCoordinates);
         for (var i = 0; i < numPoints; i++) {
-            var newCoord = getRandomUnusedCoord(newUsedCoords, r, width, height);
+            var newCoord = getNotRandomUnusedCoord(newUsedCoords, r, width, height, findMax, g);
             newUsedCoords[newCoord.getX()][newCoord.getY()] = 1;
             randomCoords.add(newCoord);
         }
@@ -170,7 +326,7 @@ public class RandomChoicePlayer implements Player {
                 coordinateWithMaxCross = c;
             }
         }
-        System.out.println("Vertex found with " + max + " crossings if added");
+        // System.out.println("Vertex found with " + max + " crossings if added");
         lastCrossingCount = max;
         return coordinateWithMaxCross;
     }

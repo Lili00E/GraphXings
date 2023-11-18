@@ -1,9 +1,9 @@
 package GraphXings;
 
-import GraphXings.Algorithms.BasicCrossingCalculatorAlgorithm;
+//import GraphXings.Algorithms.BasicCrossingCalculatorAlgorithm;
 import GraphXings.Algorithms.BentleyOttmannCrossingCalculator;
 import GraphXings.Algorithms.CrossingCalculator;
-import GraphXings.Algorithms.RandomChoicePlayer;
+//import GraphXings.Algorithms.RandomChoicePlayer;
 import GraphXings.Algorithms.RandomPlayer;
 import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
@@ -12,6 +12,8 @@ import GraphXings.GUI.GUIGame;
 import GraphXings.Game.Game;
 import GraphXings.Game.GameResult;
 
+import GraphXings.Gruppe5.RandomChoicePlayer;
+import GraphXings.Gruppe5.BasicCrossingCalculatorAlgorithm;
 import java.awt.Point;
 import java.util.ArrayList;
 
@@ -19,7 +21,7 @@ public class GraphXings {
     public static void main(String[] args) {
         // Create a graph g. This time it is a 10-cycle!
 
-        int NumNodes = 1000;
+        int NumNodes = 100;
         Vertex first = null;
         Vertex last = null;
 
@@ -49,7 +51,7 @@ public class GraphXings {
         int winsPlayer2 = 0;
         BasicCrossingCalculatorAlgorithm cc = new BasicCrossingCalculatorAlgorithm();
 
-        var player1 = new RandomChoicePlayer("Basic Crossing with Random Choice", 50, cc, 10);
+        var player1 = new RandomChoicePlayer("Basic Crossing with Random Choice", 20, cc, 27000);
         // var player1 = new BetterPlayer("Better Player");
         var player2 = new RandomPlayer("Random Player");
         var startTime = System.currentTimeMillis();
