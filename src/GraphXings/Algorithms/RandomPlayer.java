@@ -61,7 +61,7 @@ public class RandomPlayer implements Player
      * @param height The height of the game board.
      * @return A random valid move.
      */
-    private GameMove randomMove(Graph g, int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height)
+    public GameMove randomMove(Graph g, int[][] usedCoordinates, HashSet<Vertex> placedVertices, int width, int height)
     {
         int stillToBePlaced = g.getN()- placedVertices.size();
         int next = r.nextInt(stillToBePlaced);

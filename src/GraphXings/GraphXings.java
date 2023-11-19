@@ -8,7 +8,6 @@ import GraphXings.Algorithms.RandomPlayer;
 import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
 import GraphXings.Data.Vertex;
-import GraphXings.GUI.GUIGame;
 import GraphXings.Game.Game;
 import GraphXings.Game.GameResult;
 
