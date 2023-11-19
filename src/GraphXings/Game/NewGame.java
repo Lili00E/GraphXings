@@ -128,7 +128,7 @@ public class NewGame
 	 * @param maximizer The player with the goal to maximize the number of crossings.
 	 * @param minimizer The player with the goal to minimize the number of crossings
 	 * @return The number of crossings yielded in the final drawing.
-	 * @throws InvalidMoveException An exception caused by cheating.
+	 * @throws NewInvalidMoveException An exception caused by cheating.
 	 */
 	private int playRound(NewPlayer maximizer, NewPlayer minimizer) throws NewInvalidMoveException, NewTimeOutException
 	{
@@ -144,11 +144,13 @@ public class NewGame
 			{
 				long moveStartTime = System.nanoTime();
 				newMove = maximizer.maximizeCrossings(lastMove);
+
 				timeMaximizer += System.nanoTime()-moveStartTime;
 				if (timeMaximizer > timeLimit)
 				{
 					throw new NewTimeOutException(maximizer);
 				}
+				System.out.println("Check validity in playRound: " + gs.checkMoveValidity(newMove));
 				if (!gs.checkMoveValidity(newMove))
 				{
 					throw new NewInvalidMoveException(maximizer);
