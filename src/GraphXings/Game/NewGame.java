@@ -150,7 +150,6 @@ public class NewGame
 				{
 					throw new NewTimeOutException(maximizer);
 				}
-				System.out.println("Check validity in playRound: " + gs.checkMoveValidity(newMove));
 				if (!gs.checkMoveValidity(newMove))
 				{
 					throw new NewInvalidMoveException(maximizer);
