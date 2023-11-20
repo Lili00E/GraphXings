@@ -14,125 +14,25 @@ import java.util.stream.StreamSupport;
 public class RandomChoicePlayer implements NewPlayer {
 
     private final int maxPoints;
-
     private final int timoutMilliseconds;
-    /**
-     * The name of the random player.
-     */
+
     private String name;
-    /**
-     * The graph to be drawn.
-     */
+
     private Graph g;
-    /**
-     * The current state of the game;
-     */
     private GameState gs;
-    /**
-     * The width of the game board.
-     */
+
     private int width;
-    /**
-     * The height of the game board.
-     */
     private int height;
 
-    /**
-     * Creates a random player with the assigned name.
-     *
-     * @param name : name of the player competing
-     */
     public RandomChoicePlayer(String name, int maxPointsPerMove, int timoutMilliseconds) {
         this.name = name;
         this.maxPoints = maxPointsPerMove;
         this.timoutMilliseconds = timoutMilliseconds;
     }
 
-    private GameMove getRandomGameMove() {
-        Random r = new Random();
-        int stillToBePlaced = g.getN() - gs.getPlacedVertices().size();
-        int next = r.nextInt(stillToBePlaced);
-        int skipped = 0;
-        Vertex v = null;
-        for (Vertex u : g.getVertices()) {
-            if (!gs.getPlacedVertices().contains(u)) {
-                if (skipped < next) {
-                    skipped++;
-                    continue;
-                }
-                v = u;
-                break;
-            }
-        }
-        Coordinate c = new Coordinate(0, 0);
-        do {
-            c = new Coordinate(r.nextInt(width), r.nextInt(height));
-        } while (gs.getUsedCoordinates()[c.getX()][c.getY()] != 0);
-        return new GameMove(v, c);
-    }
-
-    public GameMove maximizeCrossings(GameMove lastMove) {
-
-        if (lastMove != null) {
-            gs.applyMove(lastMove);
-        }
-
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-        // Your task to be executed
-        Callable<GameMove> task = () -> {
-            GameMove betterMove = betterMove(true);
-            gs.applyMove(betterMove);
-            return betterMove;
-        };
-
-        // Submit the task to the executor
-        Future<GameMove> future = executorService.submit(task);
-        GameMove move = null;
-        try {
-            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
-        } catch (TimeoutException e) {
-            move = getRandomGameMove();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace(); // Handle other exceptions
-        } finally {
-            executorService.shutdown();
-        }
-        return move;
-    }
-
-    public GameMove minimizeCrossings(GameMove lastMove) {
-
-        if (lastMove != null) {
-            gs.applyMove(lastMove);
-        }
-
-        ExecutorService executorService = Executors.newSingleThreadExecutor();
-
-        Callable<GameMove> task = () -> {
-            GameMove betterMove = betterMove(false);
-            gs.applyMove(betterMove);
-            return betterMove;
-        };
-
-        // Submit the task to the executor
-        Future<GameMove> future = executorService.submit(task);
-        GameMove move = null;
-        try {
-            // Set a timeout for the task
-            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
-        } catch (TimeoutException e) {
-            System.out.println("TIMOUT, getting random move");
-            move = getRandomGameMove();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace(); // Handle other exceptions
-        } finally {
-            // Shutdown the executor
-            executorService.shutdown();
-        }
-        // gs.applyMove(move);
-        return move;
-
+    @Override
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -141,6 +41,19 @@ public class RandomChoicePlayer implements NewPlayer {
         this.width = width;
         this.height = height;
         this.gs = new GameState(width, height);
+    }
+
+    @Override
+    public GameMove maximizeCrossings(GameMove lastMove) {
+        return findMoveWithTimeout(lastMove, true);
+
+    }
+
+    @Override
+    public GameMove minimizeCrossings(GameMove lastMove) {
+
+        return findMoveWithTimeout(lastMove, false);
+
     }
 
     private Coordinate getRandomUnusedCoord(Random r) {
@@ -202,81 +115,171 @@ public class RandomChoicePlayer implements NewPlayer {
         return c;
     }
 
-    private Vertex chooseNextVertex() {
-        Vertex alternativeVertexNoEdge = new Vertex("new");
+    private GameMove getRandomGameMove() {
+        Random r = new Random();
+        int stillToBePlaced = g.getN() - gs.getPlacedVertices().size();
+        int next = r.nextInt(stillToBePlaced);
+        int skipped = 0;
+        Vertex v = null;
+        for (Vertex u : g.getVertices()) {
+            if (!gs.getPlacedVertices().contains(u)) {
+                if (skipped < next) {
+                    skipped++;
+                    continue;
+                }
+                v = u;
+                break;
+            }
+        }
+        Coordinate c = new Coordinate(0, 0);
+        do {
+            c = new Coordinate(r.nextInt(width), r.nextInt(height));
+        } while (gs.getUsedCoordinates()[c.getX()][c.getY()] != 0);
+        return new GameMove(v, c);
+    }
+
+    public GameMove findMoveWithTimeout(GameMove lastMove, boolean maximizeCrossings) {
+
+        if (lastMove != null) {
+            gs.applyMove(lastMove);
+        }
+
+        ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+        // Your task to be executed
+        Callable<GameMove> task = () -> {
+            GameMove betterMove = findMove(maximizeCrossings);
+            gs.applyMove(betterMove);
+            return betterMove;
+        };
+
+        // Submit the task to the executor
+        Future<GameMove> future = executorService.submit(task);
+        GameMove move = null;
+        try {
+            move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+        } catch (TimeoutException e) {
+            move = getRandomGameMove();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace(); // Handle other exceptions
+        } finally {
+            executorService.shutdown();
+        }
+        return move;
+
+    }
+
+    private Vertex chooseNextVertexWithEdge() {
+        Vertex alternativeVertexNoEdge = null;
 
         for (Vertex v : g.getVertices()) {
             if (!gs.getPlacedVertices().contains(v)) {
-                Stream<Edge> Edges = StreamSupport.stream(g.getIncidentEdges(v).spliterator(), false);
-                if (Edges.count() >= 1) {
+                var edges = g.getIncidentEdges(v);
+                if (edges.iterator().hasNext()) {
                     return v;
                 } else {
                     alternativeVertexNoEdge = v;
                 }
             }
         }
+
         return alternativeVertexNoEdge;
     }
 
-    private int[][] copyUsedCoordinates() {
-        int[][] copy = new int[gs.getUsedCoordinates().length][gs.getUsedCoordinates()[0].length];
-        for (int i = 0; i < gs.getUsedCoordinates().length; i++) {
-            for (int j = 0; j < gs.getUsedCoordinates()[0].length; j++) {
-                copy[i][j] = gs.getUsedCoordinates()[i][j];
-            }
-        }
-        return copy;
-    }
-
-    private HashMap<Vertex, Coordinate> copyVertexCoordinates() {
-        HashMap<Vertex, Coordinate> copy = new HashMap<>();
-        for (Vertex v : gs.getVertexCoordinates().keySet()) {
-            copy.put(v, gs.getVertexCoordinates().get(v));
-        }
-        return copy;
-    }
-
-    /**
-     * Computes a random valid move.
-     *
-     * @param findMax: flag if the maximization or the minimization is needed
-     * @return A random valid move.
-     */
-    private GameMove betterMove(boolean findMax) {
+    private ArrayList<Coordinate> getRandomUnusedCoordinates(int numCoordinates) {
         Random r = new Random();
-
-        // Vertex v = null;
-        Vertex v = chooseNextVertex();
-
-        int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
-        var newUsedCoords = copyUsedCoordinates();
         var randomCoords = new ArrayList<Coordinate>();
-        int numPoints = Math.min(maxAvailableCoords, maxPoints);
 
-        for (var i = 0; i < numPoints; i++) {
-            var newCoord = getNotRandomUnusedCoord(r, findMax);
-            newUsedCoords[newCoord.getX()][newCoord.getY()] = 1;
+        for (var i = 0; i < numCoordinates; i++) {
+            var newCoord = getRandomUnusedCoord(r);
             randomCoords.add(newCoord);
         }
-        if (findMax) {
+        return randomCoords;
+    }
+
+    private GameMove findMove(boolean maximizeCrossings) {
+
+        int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
+        int numPoints = Math.min(maxAvailableCoords, maxPoints);
+        var randomCoords = getRandomUnusedCoordinates(numPoints);
+
+        Vertex v = chooseNextVertexWithEdge();
+
+        if (maximizeCrossings) {
             var c = getBestOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         } else {
             var c = getWorstOfPlacement(randomCoords, v);
             return new GameMove(v, c);
-
         }
 
     }
 
-    private int calculateNewEdgeCrossings(Vertex newPlacedVertex) {
+    private Coordinate getBestOfPlacement(ArrayList<Coordinate> possibleCoordinates, Vertex vertexToBePlaced) {
+
+        Coordinate coordinateWithMaxCross = possibleCoordinates.get(0);
+        int max = 0;
+
+        for (Coordinate c : possibleCoordinates) {
+
+            var move = new GameMove(vertexToBePlaced, c);
+
+            int currentCrossingNum = calculateNewEdgeCrossings(move);
+
+            if (currentCrossingNum >= max) {
+                max = currentCrossingNum;
+                coordinateWithMaxCross = c;
+            }
+        }
+        return coordinateWithMaxCross;
+    }
+
+    private Coordinate getWorstOfPlacement(ArrayList<Coordinate> possibleCoordinates,
+            Vertex vertexToBePlaced) {
+
+        Coordinate coordinateWithMinCross = possibleCoordinates.get(0);
+        int min = 1000000000;
+
+        for (Coordinate c : possibleCoordinates) {
+
+            var move = new GameMove(vertexToBePlaced, c);
+
+            int currentCrossingNum = calculateNewEdgeCrossings(move);
+            if (currentCrossingNum < min) {
+                min = currentCrossingNum;
+                coordinateWithMinCross = c;
+            }
+        }
+
+        return coordinateWithMinCross;
+    }
+
+    private void undoMove(GameMove move) {
+
+        var usedCoordinates = gs.getUsedCoordinates();
+        var placedVertices = gs.getPlacedVertices();
+        var vertexCoordinates = gs.getVertexCoordinates();
+        usedCoordinates[move.getCoordinate().getX()][move.getCoordinate().getY()] = 0;
+        placedVertices.remove(move.getVertex());
+        vertexCoordinates.remove(move.getVertex());
+
+    }
+
+    private void applyMove(GameMove move) {
+        gs.applyMove(move);
+    }
+
+    private int calculateNewEdgeCrossings(GameMove newMove) {
+
+        applyMove(newMove);
         int crossingNumber = 0;
-        var adjacentEdges = g.getIncidentEdges(newPlacedVertex);
-
+        var adjacentEdges = g.getIncidentEdges(newMove.getVertex());
         var vertexCoordinates = this.gs.getVertexCoordinates();
-        for (Edge e1 : adjacentEdges) {
 
+        // TODO: too many edges predicted...
+        for (Edge e1 : adjacentEdges) {
             for (Edge e2 : g.getEdges()) {
+
                 if (!e1.equals(e2)) {
                     if (!e1.isAdjacent(e2)) {
 
@@ -294,51 +297,8 @@ public class RandomChoicePlayer implements NewPlayer {
                 }
             }
         }
-        return crossingNumber / 2;
+        undoMove(newMove);
+        return crossingNumber;
     }
 
-    private Coordinate getBestOfPlacement(ArrayList<Coordinate> possibleCoordinates, Vertex vertexToBePlaced) {
-
-        Coordinate coordinateWithMaxCross = possibleCoordinates.get(0);
-        int max = 0;
-        var newVertexCoordinates = copyVertexCoordinates();
-
-        for (Coordinate c : possibleCoordinates) {
-            // place vertex
-            newVertexCoordinates.put(vertexToBePlaced, c);
-            int currentCrossingNum = calculateNewEdgeCrossings(vertexToBePlaced);
-
-            if (currentCrossingNum >= max) {
-                max = currentCrossingNum;
-                coordinateWithMaxCross = c;
-            }
-        }
-        return coordinateWithMaxCross;
-    }
-
-    private Coordinate getWorstOfPlacement(ArrayList<Coordinate> possibleCoordinates,
-            Vertex vertexToBePlaced) {
-
-        Coordinate coordinateWithMinCross = possibleCoordinates.get(0);
-        int min = 1000000000;
-        var newVertexCoordinates = copyVertexCoordinates();
-
-        for (Coordinate c : possibleCoordinates) {
-            // place vertex
-            newVertexCoordinates.put(vertexToBePlaced, c);
-
-            int currentCrossingNum = calculateNewEdgeCrossings(vertexToBePlaced);
-            if (currentCrossingNum < min) {
-                min = currentCrossingNum;
-                coordinateWithMinCross = c;
-            }
-        }
-
-        return coordinateWithMinCross;
-    }
-
-    @Override
-    public String getName() {
-        return name;
-    }
 }
