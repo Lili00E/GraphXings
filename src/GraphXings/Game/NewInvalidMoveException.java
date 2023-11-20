@@ -16,7 +16,7 @@ public class NewInvalidMoveException extends Exception
 	 * Constructor that creates an InvalidMoveException.
 	 * @param cheater The cheating player.
 	 */
-	protected NewInvalidMoveException(NewPlayer cheater)
+	public NewInvalidMoveException(NewPlayer cheater)
 	{
 		this.cheater = cheater;
 	}

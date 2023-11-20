@@ -9,18 +9,23 @@ import GraphXings.Game.GameInstance.ConstantGameInstanceFactory;
 import GraphXings.Game.GameInstance.GameInstanceFactory;
 import GraphXings.Game.Match.NewMatch;
 import GraphXings.Game.Match.NewMatchResult;
+import GraphXings.Game.NewGame;
+import GraphXings.Game.NewGameResult;
+import GraphXings.Gruppe5.GUI.GUIGame;
 import GraphXings.Gruppe5.NewRandomChoicePlayer;
 
 public class GraphXings {
     public static void main(String[] args) {
 
-        int NumNodes = 10;
-        int numGames = 100;
-        int width = 10;
-        int height = 10;
+        int NumNodes = 100;
+        int numGames = 10;
+        int width = 1000;
+        int height = 1000;
+        int samplePointsPerMove = 10;
+        int timeoutInMilliseconds = 27000;
 
         Graph g = inializeGraph(NumNodes);
-        NewPlayer player1 = new NewRandomChoicePlayer("Basic Crossing with Random Choice", 20, 27000);
+        NewPlayer player1 = new NewRandomChoicePlayer("Basic Crossing with Random Choice", samplePointsPerMove, timeoutInMilliseconds);
         NewPlayer player2 = new NewRandomPlayer("Random Player");
         GameInstanceFactory gi = new ConstantGameInstanceFactory(g, width, height);
 
@@ -28,9 +33,11 @@ public class GraphXings {
 
 //        NewGame game = new NewGame(g, width, height, player1, player2);
 //        NewGameResult result = game.play();
-        // new GUIGame(g, 1000, 1000, player1, player2);
-        // var game = new GUIGame(g, 1000, 1000, player1, player2);
-        // game.initGameRound();
+
+//         //TODO fix GUIGame
+//         new GUIGame(g, 1000, 1000, player1, player2);
+//         var GUIgame = new GUIGame(g, 1000, 1000, player1, player2);
+//         GUIgame.playFullGame();
 
         NewMatch match = new NewMatch(player1, player2, gi, numGames);
         NewMatchResult result = match.play();

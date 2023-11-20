@@ -331,7 +331,8 @@ public class NewRandomChoicePlayer implements NewPlayer {
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         lastCrossingCount = crossingCalculator.computeCrossingNumber(g, gs.getVertexCoordinates());
         for (var i = 0; i < numPoints; i++) {
-            var newCoord = getNotRandomUnusedCoord(r, findMax);
+//            var newCoord = getNotRandomUnusedCoord(r, findMax)
+            var newCoord = getRandomUnusedCoord(r);
             newUsedCoords[newCoord.getX()][newCoord.getY()] = 1;
             randomCoords.add(newCoord);
         }
