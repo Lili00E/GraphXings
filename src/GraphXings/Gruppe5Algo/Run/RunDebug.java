@@ -5,6 +5,8 @@ import GraphXings.Algorithms.NewRandomPlayer;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
 import GraphXings.Gruppe5Algo.Players.RandomChoicePlayer;
+import GraphXings.Gruppe5Algo.Players.RandomChoicePlayerOld;
+import GraphXings.Gruppe5Algo.Players.RandomChoicePlayerTest;
 import GraphXings.Gruppe5Algo.Utils.ProgressBar;
 import GraphXings.Gruppe5Algo.Utils.SpecificRandomCycleFactory;
 import java.util.HashMap;
@@ -12,12 +14,11 @@ import java.util.ArrayList;
 
 public class RunDebug {
     public static void main(String[] args) {
-        // Create a graph g. This time it is a 10-cycle!
 
-        int numGames = 10;
-        int numNodes = 100;
+        int numGames = 100;
+        int numNodes = 10;
         int width = 1000;
-        int height = 1000;
+        int height = 100;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -34,14 +35,16 @@ public class RunDebug {
         var competitors = new ArrayList<NewPlayer>() {
             {
                 add(new NewRandomPlayer("Random (Control)"));
-                add(new RandomChoicePlayer("RC 20", 20, 1000));
-                add(new RandomChoicePlayer("RC 5", 5, 1000));
+//                add(new RandomChoicePlayer("RC 20", 20, 1000));
+//                add(new RandomChoicePlayer("RC 5", 5, 1000));
+//                add(new RandomChoicePlayerOld("RC 20", 20, 1000));
+                add(new RandomChoicePlayerTest("Minimize with edges", 20, 1000));
             }
         };
 
-        for (int playerIndex = 0; playerIndex < competitors.size(); playerIndex++) {
+        for (NewPlayer competitor : competitors) {
             var player1 = myPlayer;
-            var player2 = competitors.get(playerIndex);
+            var player2 = competitor;
 
             System.out.println("Starting matchup " + player1.getName() + " vs. " + player2.getName());
             for (int i = 0; i < numGames; i++) {
@@ -70,7 +73,7 @@ public class RunDebug {
             progressBar.printProgressDiscrete(winners.get(player1.getName()), numGames);
 
             System.out.println();
-            winners = new HashMap<String, Integer>();
+            winners = new HashMap<>();
 
         }
 

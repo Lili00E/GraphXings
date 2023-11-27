@@ -4,12 +4,9 @@ import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Data.*;
 import GraphXings.Game.GameMove;
 import GraphXings.Game.GameState;
-import GraphXings.Gruppe5Algo.Algorithms.BasicCrossingCalculatorAlgorithm;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
 public class RandomChoicePlayer implements NewPlayer {
 
@@ -73,46 +70,29 @@ public class RandomChoicePlayer implements NewPlayer {
         int x = c.getX();
         int y = c.getY();
 
-        if (x >= width || y >= height || gs.getUsedCoordinates()[x][y] != 0) {
-            return false;
-        }
-
-        return true;
+        return x < width && y < height && gs.getUsedCoordinates()[x][y] == 0;
     }
 
-    private Coordinate getNotRandomUnusedCoord(Random r, boolean findMax) {
-        double maxFieldSizeFactor = 0.9;
-        double minFieldSizeFactor = 0.4;
+    private ArrayList<Coordinate> getNotRandomUnusedCoord() {
+        Random r = new Random();
+        int intervalSizeX = width/10;
+        int intervalSizeY = height/10;
+        ArrayList<Coordinate> coords = new ArrayList<>();
+        int x;
+        int y;
         Coordinate c;
 
-        do {
-            if (findMax) {
-                double maxFieldLength = 1 - maxFieldSizeFactor;
-                int sizeOfField = (int) ((maxFieldLength * width) * (maxFieldLength * height));
-
-                if (sizeOfField < g.getN()) {
-                    // c = getAlternativeInterval();
-                    c = getRandomUnusedCoord(r);
-                } else {
-                    c = new Coordinate(r.nextInt((int) (maxFieldSizeFactor * width), width),
-                            r.nextInt((int) (maxFieldSizeFactor * height), height));
-                }
-            } else {
-                double minFieldLength = Math.abs(minFieldSizeFactor - (1 - minFieldSizeFactor));
-                int sizeOfField = (int) ((minFieldLength * width) * (minFieldLength * height));
-
-                if (sizeOfField < g.getN()) {
-                    // c = getAlternativeInterval(height, g.getN());
-                    c = getRandomUnusedCoord(r);
-                } else {
-                    c = new Coordinate(
-                            r.nextInt((int) (minFieldSizeFactor * width), (int) ((1 - minFieldSizeFactor) * width)),
-                            r.nextInt((int) (minFieldSizeFactor * height), (int) ((1 - minFieldSizeFactor) * height)));
-                }
+        for (int i = intervalSizeX; i < width; i+=intervalSizeX) {
+            for (int j = intervalSizeY; j < height; j+=intervalSizeY) {
+                do {
+                    x = r.nextInt(i - (i - intervalSizeX)) + (i - intervalSizeX);
+                    y = r.nextInt(j - (j - intervalSizeY)) + (j - intervalSizeY);
+                    c = new Coordinate(x,y);
+                } while((x >= width) || (y >= height) ||(gs.getUsedCoordinates()[x][y] != 0));
+                coords.add(c);
             }
-        } while ((gs.getUsedCoordinates()[c.getX()][c.getY()] != 0) && !isCoordiateValid(c));
-
-        return c;
+        }
+        return coords;
     }
 
     private GameMove getRandomGameMove() {
@@ -169,22 +149,39 @@ public class RandomChoicePlayer implements NewPlayer {
 
     }
 
-    private Vertex chooseNextVertexWithEdge() {
-        Vertex alternativeVertexNoEdge = null;
+    private Vertex getNextVertex(boolean maximize) {
+        Vertex alternativeVertex = null;
 
         for (Vertex v : g.getVertices()) {
             if (!gs.getPlacedVertices().contains(v)) {
                 var edges = g.getIncidentEdges(v);
-                if (edges.iterator().hasNext()) {
-                    return v;
+//                if (edges.iterator().hasNext()) {
+//                        return v;
+//                    } else {
+//                        alternativeVertex = v;
+//                    }
+                // choose Vertex with edges for maximization
+                if(maximize) {
+                    if (edges.iterator().hasNext()) {
+                        return v;
+                    } else {
+                        alternativeVertex = v;
+                    }
+//                // choose Vertex without edges for minimization
                 } else {
-                    alternativeVertexNoEdge = v;
+                    if (!edges.iterator().hasNext()) {
+                        return v;
+                    } else {
+                        alternativeVertex = v;
+                    }
+
                 }
             }
         }
-
-        return alternativeVertexNoEdge;
+        return alternativeVertex;
     }
+
+
 
     private ArrayList<Coordinate> getRandomUnusedCoordinates(int numCoordinates) {
         Random r = new Random();
@@ -202,14 +199,14 @@ public class RandomChoicePlayer implements NewPlayer {
         int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         var randomCoords = getRandomUnusedCoordinates(numPoints);
-
-        Vertex v = chooseNextVertexWithEdge();
+        ArrayList<Coordinate> possibleCoords = getNotRandomUnusedCoord();
+        Vertex v = getNextVertex(maximizeCrossings);
 
         if (maximizeCrossings) {
-            var c = getBestOfPlacement(randomCoords, v);
+            Coordinate c = getBestOfPlacement(possibleCoords, v);
             return new GameMove(v, c);
         } else {
-            var c = getWorstOfPlacement(randomCoords, v);
+             Coordinate c = getWorstOfPlacement(possibleCoords, v);
             return new GameMove(v, c);
         }
 
