@@ -85,16 +85,14 @@ public class RandomChoicePlayerTest implements NewPlayer {
         ArrayList<Coordinate> coords = new ArrayList<>();
         int x;
         int y;
-        Coordinate c;
 
         for (int i = intervalSizeX; i < width; i+=intervalSizeX) {
             for (int j = intervalSizeY; j < height; j+=intervalSizeY) {
                 do {
                     x = r.nextInt(i - (i - intervalSizeX)) + (i - intervalSizeX);
                     y = r.nextInt(j - (j - intervalSizeY)) + (j - intervalSizeY);
-                    c = new Coordinate(x,y);
                 } while((x >= width) || (y >= height) ||(gs.getUsedCoordinates()[x][y] != 0));
-                coords.add(c);
+                coords.add(new Coordinate(x,y));
             }
         }
         return coords;

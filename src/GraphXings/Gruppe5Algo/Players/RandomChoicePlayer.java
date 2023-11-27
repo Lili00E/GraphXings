@@ -21,6 +21,10 @@ public class RandomChoicePlayer implements NewPlayer {
     private int width;
     private int height;
 
+    public int[] gridStatisticMax;
+    public int[] gridStatisticMin;
+
+
     public RandomChoicePlayer(String name, int maxPointsPerMove, int timoutMilliseconds) {
         this.name = name;
         this.maxPoints = maxPointsPerMove;
@@ -38,6 +42,10 @@ public class RandomChoicePlayer implements NewPlayer {
         this.width = width;
         this.height = height;
         this.gs = new GameState(width, height);
+        if(this.gridStatisticMax == null){
+            this.gridStatisticMax = new int[(height/10)*(width/10) + 1];
+            this.gridStatisticMin = new int[(height/10)*(width/10) + 1];
+        }
     }
 
     @Override
@@ -73,11 +81,13 @@ public class RandomChoicePlayer implements NewPlayer {
         return x < width && y < height && gs.getUsedCoordinates()[x][y] == 0;
     }
 
-    private ArrayList<Coordinate> getNotRandomUnusedCoord() {
+    private HashMap<Coordinate, Integer> getNotRandomUnusedCoords() {
         Random r = new Random();
         int intervalSizeX = width/10;
         int intervalSizeY = height/10;
         ArrayList<Coordinate> coords = new ArrayList<>();
+        HashMap<Coordinate, Integer> coordsWithGridNum = new HashMap<>();
+        int gridNum = 1;
         int x;
         int y;
         Coordinate c;
@@ -90,9 +100,11 @@ public class RandomChoicePlayer implements NewPlayer {
                     c = new Coordinate(x,y);
                 } while((x >= width) || (y >= height) ||(gs.getUsedCoordinates()[x][y] != 0));
                 coords.add(c);
+                coordsWithGridNum.put(c, gridNum);
+                gridNum++;
             }
         }
-        return coords;
+        return coordsWithGridNum;
     }
 
     private GameMove getRandomGameMove() {
@@ -155,11 +167,6 @@ public class RandomChoicePlayer implements NewPlayer {
         for (Vertex v : g.getVertices()) {
             if (!gs.getPlacedVertices().contains(v)) {
                 var edges = g.getIncidentEdges(v);
-//                if (edges.iterator().hasNext()) {
-//                        return v;
-//                    } else {
-//                        alternativeVertex = v;
-//                    }
                 // choose Vertex with edges for maximization
                 if(maximize) {
                     if (edges.iterator().hasNext()) {
@@ -199,7 +206,7 @@ public class RandomChoicePlayer implements NewPlayer {
         int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         var randomCoords = getRandomUnusedCoordinates(numPoints);
-        ArrayList<Coordinate> possibleCoords = getNotRandomUnusedCoord();
+        HashMap<Coordinate, Integer> possibleCoords = getNotRandomUnusedCoords();
         Vertex v = getNextVertex(maximizeCrossings);
 
         if (maximizeCrossings) {
@@ -212,13 +219,21 @@ public class RandomChoicePlayer implements NewPlayer {
 
     }
 
-    private Coordinate getBestOfPlacement(ArrayList<Coordinate> possibleCoordinates, Vertex vertexToBePlaced) {
+    private void createGridStatistic(Integer gridNum, Boolean max) {
+        if (max){
+            this.gridStatisticMax[gridNum] += 1;
+        } else {
+            this.gridStatisticMin[gridNum] += 1;
+        }
 
-        Coordinate coordinateWithMaxCross = possibleCoordinates.get(0);
+    }
+
+    private Coordinate getBestOfPlacement(HashMap<Coordinate, Integer> possibleCoordinates, Vertex vertexToBePlaced) {
+
+        Coordinate coordinateWithMaxCross = new Coordinate(0,0);
         int max = 0;
 
-        for (Coordinate c : possibleCoordinates) {
-
+        for (Coordinate c : possibleCoordinates.keySet()) {
             var move = new GameMove(vertexToBePlaced, c);
 
             int currentCrossingNum = calculateNewEdgeCrossings(move);
@@ -228,16 +243,17 @@ public class RandomChoicePlayer implements NewPlayer {
                 coordinateWithMaxCross = c;
             }
         }
+        createGridStatistic(possibleCoordinates.get(coordinateWithMaxCross), true);
         return coordinateWithMaxCross;
     }
 
-    private Coordinate getWorstOfPlacement(ArrayList<Coordinate> possibleCoordinates,
+    private Coordinate getWorstOfPlacement(HashMap<Coordinate, Integer> possibleCoordinates,
             Vertex vertexToBePlaced) {
 
-        Coordinate coordinateWithMinCross = possibleCoordinates.get(0);
+        Coordinate coordinateWithMinCross = new Coordinate(0,0);
         int min = 1000000000;
 
-        for (Coordinate c : possibleCoordinates) {
+        for (Coordinate c : possibleCoordinates.keySet()) {
 
             var move = new GameMove(vertexToBePlaced, c);
 
@@ -247,7 +263,7 @@ public class RandomChoicePlayer implements NewPlayer {
                 coordinateWithMinCross = c;
             }
         }
-
+        createGridStatistic(possibleCoordinates.get(coordinateWithMinCross), false);
         return coordinateWithMinCross;
     }
 

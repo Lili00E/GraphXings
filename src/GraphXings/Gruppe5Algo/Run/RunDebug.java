@@ -9,15 +9,19 @@ import GraphXings.Gruppe5Algo.Players.RandomChoicePlayerOld;
 import GraphXings.Gruppe5Algo.Players.RandomChoicePlayerTest;
 import GraphXings.Gruppe5Algo.Utils.ProgressBar;
 import GraphXings.Gruppe5Algo.Utils.SpecificRandomCycleFactory;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.ArrayList;
 
 public class RunDebug {
     public static void main(String[] args) {
 
-        int numGames = 100;
+        int numGames = 1000;
         int numNodes = 10;
-        int width = 1000;
+        int width = 100;
         int height = 100;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
@@ -37,7 +41,7 @@ public class RunDebug {
                 add(new NewRandomPlayer("Random (Control)"));
 //                add(new RandomChoicePlayer("RC 20", 20, 1000));
 //                add(new RandomChoicePlayer("RC 5", 5, 1000));
-//                add(new RandomChoicePlayerOld("RC 20", 20, 1000));
+                add(new RandomChoicePlayerOld("RC 20", 20, 1000));
                 add(new RandomChoicePlayerTest("Minimize with edges", 20, 1000));
             }
         };
@@ -72,10 +76,46 @@ public class RunDebug {
             System.out.println("Win distribution for " + player1.getName() + " vs. " + player2.getName());
             progressBar.printProgressDiscrete(winners.get(player1.getName()), numGames);
 
+            csvReport(player1.gridStatisticMax, player1.gridStatisticMin);
+
             System.out.println();
             winners = new HashMap<>();
 
         }
 
+    }
+
+    /**
+     * Output to csv file.
+     */
+    public static void csvReport(int[] gridMax, int[] gridMin){
+        try {
+            String dest = "./histograms";
+            File file = new File(dest);
+            file.mkdir();
+            FileWriter histMax = new FileWriter(dest + "/" + "MaxGridValues.csv");
+            FileWriter histMin = new FileWriter(dest + "/" + "MinGridValues.csv");
+
+            histMax.append("GridNumber ; CoordinatesChosen\n");
+            histMin.append("GridNumber ; CoordinatesChosen\n");
+
+            String max = "";
+            String min = "";
+
+            for (int i = 1; i < gridMax.length; i++) {
+                max += (i + ";" + gridMax[i] + "\n");
+                min += (i + ";" + gridMin[i] + "\n");
+
+            }
+
+            histMax.append(max);
+            histMin.append(min);
+
+            histMax.close();
+            histMin.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
