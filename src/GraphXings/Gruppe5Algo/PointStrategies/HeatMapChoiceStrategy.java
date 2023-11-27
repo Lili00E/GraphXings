@@ -18,6 +18,11 @@ public class HeatMapChoiceStrategy implements PointChoiceStrategy {
         this.maxPoints = maxPoints;
     }
 
+    public HeatMapChoiceStrategy(HeatMap map) {
+        this.heatMap = map;
+        this.maxPoints = 20;
+    }
+
     private Coordinate getRandomUnusedCoord(Random r, int[][] usedCoordinates, int width, int height,
             HashSet<Vertex> placedVertices) {
 

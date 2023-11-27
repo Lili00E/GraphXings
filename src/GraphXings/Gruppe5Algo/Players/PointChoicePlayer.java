@@ -112,26 +112,36 @@ public class PointChoicePlayer implements NewPlayer {
 
     }
 
-    private Vertex chooseNextVertexWithEdge() {
-        Vertex alternativeVertexNoEdge = null;
+    private Vertex chooseNextVertexWithEdge(boolean maximize) {
+        Vertex alternativeVertex = null;
 
         for (Vertex v : g.getVertices()) {
             if (!gs.getPlacedVertices().contains(v)) {
                 var edges = g.getIncidentEdges(v);
-                if (edges.iterator().hasNext()) {
-                    return v;
+                // choose Vertex with edges for maximization
+                if (maximize) {
+                    if (edges.iterator().hasNext()) {
+                        return v;
+                    } else {
+                        alternativeVertex = v;
+                    }
+                    // // choose Vertex without edges for minimization
                 } else {
-                    alternativeVertexNoEdge = v;
+                    if (!edges.iterator().hasNext()) {
+                        return v;
+                    } else {
+                        alternativeVertex = v;
+                    }
+
                 }
             }
         }
-
-        return alternativeVertexNoEdge;
+        return alternativeVertex;
     }
 
     private GameMove findMove(boolean maximizeCrossings) {
 
-        Vertex v = chooseNextVertexWithEdge();
+        Vertex v = chooseNextVertexWithEdge(maximizeCrossings);
 
         if (maximizeCrossings) {
             var randomCoords = maxPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,

@@ -53,19 +53,19 @@ public class RunDebug {
 
         // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
         var maxHeatMap = new HeatMapFileReader()
-                .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SimpleHeatMap.txt");
+                .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
         var minHeatMap = new HeatMapFileReader()
                 .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
 
-        var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(minHeatMap, 5),
-                new HeatMapChoiceStrategy(maxHeatMap, 5), 2000);
+        var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(minHeatMap),
+                new HeatMapChoiceStrategy(maxHeatMap), 2000);
 
         var competitors = new ArrayList<NewPlayer>() {
             {
                 // add(new NewRandomPlayer("Random (Control)"));
                 // add(new RandomChoicePlayer("RC 20", 20, 1000));
                 // add(new RandomChoicePlayer("RC 5", 5, 1000));
-                add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(5), new RandomPointChoiceStrategy(5),
+                add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20), new RandomPointChoiceStrategy(20),
                         2000));
                 // add(new PointChoicePlayer("Gridmaster 81", new GridPointChoiceStrategy(10),
                 // new GridPointChoiceStrategy(10),
