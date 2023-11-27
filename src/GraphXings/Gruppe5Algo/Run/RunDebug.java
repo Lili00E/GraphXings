@@ -4,11 +4,15 @@ import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Algorithms.NewRandomPlayer;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
-import GraphXings.Gruppe5Algo.Players.RandomChoicePlayer;
-import GraphXings.Gruppe5Algo.Players.RandomChoicePlayerOld;
-import GraphXings.Gruppe5Algo.Players.RandomChoicePlayerTest;
+import GraphXings.Gruppe5Algo.Models.HeatMap;
+import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
+import GraphXings.Gruppe5Algo.Players.PointChoicePlayer;
+import GraphXings.Gruppe5Algo.PointStrategies.GridPointChoiceStrategy;
+import GraphXings.Gruppe5Algo.PointStrategies.HeatMapChoiceStrategy;
+import GraphXings.Gruppe5Algo.PointStrategies.RandomPointChoiceStrategy;
 import GraphXings.Gruppe5Algo.Utils.ProgressBar;
 import GraphXings.Gruppe5Algo.Utils.SpecificRandomCycleFactory;
+import GraphXings.Gruppe5Algo.Utils.WeightedNumberGenerator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -19,10 +23,10 @@ import java.util.ArrayList;
 public class RunDebug {
     public static void main(String[] args) {
 
-        int numGames = 1000;
-        int numNodes = 10;
-        int width = 100;
-        int height = 100;
+        int numGames = 50;
+        int numNodes = 100;
+        int width = 1000;
+        int height = 1000;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -34,15 +38,39 @@ public class RunDebug {
 
         var progressBar = new ProgressBar(100, '=');
 
-        var myPlayer = new RandomChoicePlayer("My Player", 20, 1000);
+        // var heatMapSize = 100;
+        // var totalSize = heatMapSize * heatMapSize;
+        // double[] weights = new double[totalSize];
+
+        // double p = 1.0 / (double) totalSize;
+
+        // System.out.println(p);
+
+        // for (int i = 0; i < weights.length; i++) {
+        // weights[i] = p;
+        // }
+        // var generator = new WeightedNumberGenerator(weights);
+
+        // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
+        var maxHeatMap = new HeatMapFileReader()
+                .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SimpleHeatMap.txt");
+        var minHeatMap = new HeatMapFileReader()
+                .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+
+        var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(minHeatMap, 5),
+                new HeatMapChoiceStrategy(maxHeatMap, 5), 2000);
 
         var competitors = new ArrayList<NewPlayer>() {
             {
-                add(new NewRandomPlayer("Random (Control)"));
-//                add(new RandomChoicePlayer("RC 20", 20, 1000));
-//                add(new RandomChoicePlayer("RC 5", 5, 1000));
-                add(new RandomChoicePlayerOld("RC 20", 20, 1000));
-                add(new RandomChoicePlayerTest("Minimize with edges", 20, 1000));
+                // add(new NewRandomPlayer("Random (Control)"));
+                // add(new RandomChoicePlayer("RC 20", 20, 1000));
+                // add(new RandomChoicePlayer("RC 5", 5, 1000));
+                add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(5), new RandomPointChoiceStrategy(5),
+                        2000));
+                // add(new PointChoicePlayer("Gridmaster 81", new GridPointChoiceStrategy(10),
+                // new GridPointChoiceStrategy(10),
+                // 2000));
+                // add(new RandomChoicePlayerTest("Minimize with edges", 20, 2000));
             }
         };
 
@@ -76,8 +104,6 @@ public class RunDebug {
             System.out.println("Win distribution for " + player1.getName() + " vs. " + player2.getName());
             progressBar.printProgressDiscrete(winners.get(player1.getName()), numGames);
 
-            csvReport(player1.gridStatisticMax, player1.gridStatisticMin);
-
             System.out.println();
             winners = new HashMap<>();
 
@@ -88,7 +114,7 @@ public class RunDebug {
     /**
      * Output to csv file.
      */
-    public static void csvReport(int[] gridMax, int[] gridMin){
+    public static void csvReport(int[] gridMax, int[] gridMin) {
         try {
             String dest = "./histograms";
             File file = new File(dest);

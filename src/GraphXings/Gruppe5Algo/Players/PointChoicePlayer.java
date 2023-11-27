@@ -4,16 +4,13 @@ import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Data.*;
 import GraphXings.Game.GameMove;
 import GraphXings.Game.GameState;
-import GraphXings.Gruppe5Algo.Algorithms.BasicCrossingCalculatorAlgorithm;
+import GraphXings.Gruppe5Algo.PointStrategies.PointChoiceStrategy;
 
 import java.util.*;
 import java.util.concurrent.*;
-import java.util.stream.Stream;
-import java.util.stream.StreamSupport;
 
-public class RandomChoicePlayerOld implements NewPlayer {
+public class PointChoicePlayer implements NewPlayer {
 
-    private final int maxPoints;
     private final int timoutMilliseconds;
 
     private String name;
@@ -24,9 +21,14 @@ public class RandomChoicePlayerOld implements NewPlayer {
     private int width;
     private int height;
 
-    public RandomChoicePlayerOld(String name, int maxPointsPerMove, int timoutMilliseconds) {
+    private PointChoiceStrategy minPointChoiceStrategy;
+    private PointChoiceStrategy maxPointChoiceStrategy;
+
+    public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy,
+            int timoutMilliseconds) {
         this.name = name;
-        this.maxPoints = maxPointsPerMove;
+        this.maxPointChoiceStrategy = maxStrategy;
+        this.minPointChoiceStrategy = minStrategy;
         this.timoutMilliseconds = timoutMilliseconds;
     }
 
@@ -54,65 +56,6 @@ public class RandomChoicePlayerOld implements NewPlayer {
 
         return findMoveWithTimeout(lastMove, false);
 
-    }
-
-    private Coordinate getRandomUnusedCoord(Random r) {
-
-        var x = r.nextInt(width);
-        var y = r.nextInt(height);
-        do {
-            x = r.nextInt(width);
-            y = r.nextInt(height);
-        } while (gs.getUsedCoordinates()[x][y] != 0);
-
-        return new Coordinate(x, y);
-
-    }
-
-    private Boolean isCoordiateValid(Coordinate c) {
-        int x = c.getX();
-        int y = c.getY();
-
-        if (x >= width || y >= height || gs.getUsedCoordinates()[x][y] != 0) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private Coordinate getNotRandomUnusedCoord(Random r, boolean findMax) {
-        double maxFieldSizeFactor = 0.9;
-        double minFieldSizeFactor = 0.4;
-        Coordinate c;
-
-        do {
-            if (findMax) {
-                double maxFieldLength = 1 - maxFieldSizeFactor;
-                int sizeOfField = (int) ((maxFieldLength * width) * (maxFieldLength * height));
-
-                if (sizeOfField < g.getN()) {
-                    // c = getAlternativeInterval();
-                    c = getRandomUnusedCoord(r);
-                } else {
-                    c = new Coordinate(r.nextInt((int) (maxFieldSizeFactor * width), width),
-                            r.nextInt((int) (maxFieldSizeFactor * height), height));
-                }
-            } else {
-                double minFieldLength = Math.abs(minFieldSizeFactor - (1 - minFieldSizeFactor));
-                int sizeOfField = (int) ((minFieldLength * width) * (minFieldLength * height));
-
-                if (sizeOfField < g.getN()) {
-                    // c = getAlternativeInterval(height, g.getN());
-                    c = getRandomUnusedCoord(r);
-                } else {
-                    c = new Coordinate(
-                            r.nextInt((int) (minFieldSizeFactor * width), (int) ((1 - minFieldSizeFactor) * width)),
-                            r.nextInt((int) (minFieldSizeFactor * height), (int) ((1 - minFieldSizeFactor) * height)));
-                }
-            }
-        } while ((gs.getUsedCoordinates()[c.getX()][c.getY()] != 0) && !isCoordiateValid(c));
-
-        return c;
     }
 
     private GameMove getRandomGameMove() {
@@ -186,29 +129,18 @@ public class RandomChoicePlayerOld implements NewPlayer {
         return alternativeVertexNoEdge;
     }
 
-    private ArrayList<Coordinate> getRandomUnusedCoordinates(int numCoordinates) {
-        Random r = new Random();
-        var randomCoords = new ArrayList<Coordinate>();
-
-        for (var i = 0; i < numCoordinates; i++) {
-            var newCoord = getRandomUnusedCoord(r);
-            randomCoords.add(newCoord);
-        }
-        return randomCoords;
-    }
-
     private GameMove findMove(boolean maximizeCrossings) {
-
-        int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
-        int numPoints = Math.min(maxAvailableCoords, maxPoints);
-        var randomCoords = getRandomUnusedCoordinates(numPoints);
 
         Vertex v = chooseNextVertexWithEdge();
 
         if (maximizeCrossings) {
+            var randomCoords = maxPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,
+                    gs.getPlacedVertices());
             var c = getBestOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         } else {
+            var randomCoords = minPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,
+                    gs.getPlacedVertices());
             var c = getWorstOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         }
