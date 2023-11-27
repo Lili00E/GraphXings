@@ -201,12 +201,28 @@ public class RandomChoicePlayer implements NewPlayer {
         return randomCoords;
     }
 
+    private HashMap<Coordinate, Integer> getRandomUnusedCoordinatesAsMap(int numCoordinates) {
+        Random r = new Random();
+        var randomCoords = new HashMap<Coordinate, Integer>();
+
+        for (var i = 0; i < numCoordinates; i++) {
+            var newCoord = getRandomUnusedCoord(r);
+            randomCoords.put(newCoord, i);
+        }
+        return randomCoords;
+    }
+
     private GameMove findMove(boolean maximizeCrossings) {
 
         int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
         var randomCoords = getRandomUnusedCoordinates(numPoints);
-        HashMap<Coordinate, Integer> possibleCoords = getNotRandomUnusedCoords();
+        HashMap<Coordinate, Integer> possibleCoords;
+        try {
+            possibleCoords = getNotRandomUnusedCoords();
+        } catch (NullPointerException e){
+            possibleCoords = getRandomUnusedCoordinatesAsMap(numPoints);
+        }
         Vertex v = getNextVertex(maximizeCrossings);
 
         if (maximizeCrossings) {
