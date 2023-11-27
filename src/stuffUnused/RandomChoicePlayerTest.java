@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.Players;
+package stuffUnused;
 
 import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Data.*;
@@ -80,19 +80,19 @@ public class RandomChoicePlayerTest implements NewPlayer {
 
     private ArrayList<Coordinate> getNotRandomUnusedCoord() {
         Random r = new Random();
-        int intervalSizeX = width/10;
-        int intervalSizeY = height/10;
+        int intervalSizeX = width / 10;
+        int intervalSizeY = height / 10;
         ArrayList<Coordinate> coords = new ArrayList<>();
         int x;
         int y;
 
-        for (int i = intervalSizeX; i < width; i+=intervalSizeX) {
-            for (int j = intervalSizeY; j < height; j+=intervalSizeY) {
+        for (int i = intervalSizeX; i < width; i += intervalSizeX) {
+            for (int j = intervalSizeY; j < height; j += intervalSizeY) {
                 do {
                     x = r.nextInt(i - (i - intervalSizeX)) + (i - intervalSizeX);
                     y = r.nextInt(j - (j - intervalSizeY)) + (j - intervalSizeY);
-                } while((x >= width) || (y >= height) ||(gs.getUsedCoordinates()[x][y] != 0));
-                coords.add(new Coordinate(x,y));
+                } while ((x >= width) || (y >= height) || (gs.getUsedCoordinates()[x][y] != 0));
+                coords.add(new Coordinate(x, y));
             }
         }
         return coords;
@@ -159,16 +159,14 @@ public class RandomChoicePlayerTest implements NewPlayer {
             if (!gs.getPlacedVertices().contains(v)) {
                 var edges = g.getIncidentEdges(v);
                 if (edges.iterator().hasNext()) {
-                        return v;
-                    } else {
-                        alternativeVertex = v;
-                    }
+                    return v;
+                } else {
+                    alternativeVertex = v;
+                }
             }
         }
         return alternativeVertex;
     }
-
-
 
     private ArrayList<Coordinate> getRandomUnusedCoordinates(int numCoordinates) {
         Random r = new Random();
@@ -194,7 +192,7 @@ public class RandomChoicePlayerTest implements NewPlayer {
             Coordinate c = getBestOfPlacement(possibleCoords, v);
             return new GameMove(v, c);
         } else {
-             Coordinate c = getWorstOfPlacement(possibleCoords, v);
+            Coordinate c = getWorstOfPlacement(possibleCoords, v);
             return new GameMove(v, c);
         }
 

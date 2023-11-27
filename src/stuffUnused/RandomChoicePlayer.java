@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.Players;
+package stuffUnused;
 
 import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Data.*;
@@ -24,7 +24,6 @@ public class RandomChoicePlayer implements NewPlayer {
     public int[] gridStatisticMax;
     public int[] gridStatisticMin;
 
-
     public RandomChoicePlayer(String name, int maxPointsPerMove, int timoutMilliseconds) {
         this.name = name;
         this.maxPoints = maxPointsPerMove;
@@ -42,9 +41,9 @@ public class RandomChoicePlayer implements NewPlayer {
         this.width = width;
         this.height = height;
         this.gs = new GameState(width, height);
-        if(this.gridStatisticMax == null){
-            this.gridStatisticMax = new int[(height/10)*(width/10) + 1];
-            this.gridStatisticMin = new int[(height/10)*(width/10) + 1];
+        if (this.gridStatisticMax == null) {
+            this.gridStatisticMax = new int[(height / 10) * (width / 10) + 1];
+            this.gridStatisticMin = new int[(height / 10) * (width / 10) + 1];
         }
     }
 
@@ -83,8 +82,8 @@ public class RandomChoicePlayer implements NewPlayer {
 
     private HashMap<Coordinate, Integer> getNotRandomUnusedCoords() {
         Random r = new Random();
-        int intervalSizeX = width/10;
-        int intervalSizeY = height/10;
+        int intervalSizeX = width / 10;
+        int intervalSizeY = height / 10;
         ArrayList<Coordinate> coords = new ArrayList<>();
         HashMap<Coordinate, Integer> coordsWithGridNum = new HashMap<>();
         int gridNum = 1;
@@ -92,13 +91,13 @@ public class RandomChoicePlayer implements NewPlayer {
         int y;
         Coordinate c;
 
-        for (int i = intervalSizeX; i < width; i+=intervalSizeX) {
-            for (int j = intervalSizeY; j < height; j+=intervalSizeY) {
+        for (int i = intervalSizeX; i < width; i += intervalSizeX) {
+            for (int j = intervalSizeY; j < height; j += intervalSizeY) {
                 do {
                     x = r.nextInt(i - (i - intervalSizeX)) + (i - intervalSizeX);
                     y = r.nextInt(j - (j - intervalSizeY)) + (j - intervalSizeY);
-                    c = new Coordinate(x,y);
-                } while((x >= width) || (y >= height) ||(gs.getUsedCoordinates()[x][y] != 0));
+                    c = new Coordinate(x, y);
+                } while ((x >= width) || (y >= height) || (gs.getUsedCoordinates()[x][y] != 0));
                 coords.add(c);
                 coordsWithGridNum.put(c, gridNum);
                 gridNum++;
@@ -168,13 +167,13 @@ public class RandomChoicePlayer implements NewPlayer {
             if (!gs.getPlacedVertices().contains(v)) {
                 var edges = g.getIncidentEdges(v);
                 // choose Vertex with edges for maximization
-                if(maximize) {
+                if (maximize) {
                     if (edges.iterator().hasNext()) {
                         return v;
                     } else {
                         alternativeVertex = v;
                     }
-//                // choose Vertex without edges for minimization
+                    // // choose Vertex without edges for minimization
                 } else {
                     if (!edges.iterator().hasNext()) {
                         return v;
@@ -187,8 +186,6 @@ public class RandomChoicePlayer implements NewPlayer {
         }
         return alternativeVertex;
     }
-
-
 
     private ArrayList<Coordinate> getRandomUnusedCoordinates(int numCoordinates) {
         Random r = new Random();
@@ -213,14 +210,14 @@ public class RandomChoicePlayer implements NewPlayer {
             Coordinate c = getBestOfPlacement(possibleCoords, v);
             return new GameMove(v, c);
         } else {
-             Coordinate c = getWorstOfPlacement(possibleCoords, v);
+            Coordinate c = getWorstOfPlacement(possibleCoords, v);
             return new GameMove(v, c);
         }
 
     }
 
     private void createGridStatistic(Integer gridNum, Boolean max) {
-        if (max){
+        if (max) {
             this.gridStatisticMax[gridNum] += 1;
         } else {
             this.gridStatisticMin[gridNum] += 1;
@@ -230,7 +227,7 @@ public class RandomChoicePlayer implements NewPlayer {
 
     private Coordinate getBestOfPlacement(HashMap<Coordinate, Integer> possibleCoordinates, Vertex vertexToBePlaced) {
 
-        Coordinate coordinateWithMaxCross = new Coordinate(0,0);
+        Coordinate coordinateWithMaxCross = new Coordinate(0, 0);
         int max = 0;
 
         for (Coordinate c : possibleCoordinates.keySet()) {
@@ -250,7 +247,7 @@ public class RandomChoicePlayer implements NewPlayer {
     private Coordinate getWorstOfPlacement(HashMap<Coordinate, Integer> possibleCoordinates,
             Vertex vertexToBePlaced) {
 
-        Coordinate coordinateWithMinCross = new Coordinate(0,0);
+        Coordinate coordinateWithMinCross = new Coordinate(0, 0);
         int min = 1000000000;
 
         for (Coordinate c : possibleCoordinates.keySet()) {
