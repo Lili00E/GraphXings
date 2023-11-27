@@ -1,4 +1,4 @@
-Erstellung der Heatmap:
+Erstellung der Heatmap in GraphXings:
 var maxHeatMap = new HeatMapFileReader()
                 .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SimpleHeatMap.txt");
 var minHeatMap = new HeatMapFileReader()
