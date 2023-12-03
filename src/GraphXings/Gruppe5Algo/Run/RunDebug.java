@@ -1,19 +1,14 @@
 package GraphXings.Gruppe5Algo.Run;
 
 import GraphXings.Algorithms.NewPlayer;
-import GraphXings.Algorithms.NewRandomPlayer;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
-import GraphXings.Gruppe5Algo.Models.HeatMap;
 import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
 import GraphXings.Gruppe5Algo.Players.PointChoicePlayer;
-import GraphXings.Gruppe5Algo.PointStrategies.GridPointChoiceStrategy;
 import GraphXings.Gruppe5Algo.PointStrategies.HeatMapChoiceStrategy;
 import GraphXings.Gruppe5Algo.PointStrategies.RandomPointChoiceStrategy;
 import GraphXings.Gruppe5Algo.Utils.ProgressBar;
 import GraphXings.Gruppe5Algo.Utils.SpecificRandomCycleFactory;
-import GraphXings.Gruppe5Algo.Utils.WeightedNumberGenerator;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
