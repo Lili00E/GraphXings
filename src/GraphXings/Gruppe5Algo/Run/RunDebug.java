@@ -18,10 +18,10 @@ import java.util.ArrayList;
 public class RunDebug {
     public static void main(String[] args) {
 
-        int numGames = 50;
-        int numNodes = 100;
-        int width = 1000;
-        int height = 1000;
+        int numGames = 10;
+        int numNodes = 1000;
+        int width = 10000;
+        int height = 10000;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -48,9 +48,9 @@ public class RunDebug {
 
         // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
         var maxHeatMap = new HeatMapFileReader()
-                .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+                .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMapMini.txt");
         var minHeatMap = new HeatMapFileReader()
-                .readFromFile("./GraphXings/src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+                .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
 
         var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(minHeatMap),
                 new HeatMapChoiceStrategy(maxHeatMap), 2000);
@@ -60,7 +60,7 @@ public class RunDebug {
                 // add(new NewRandomPlayer("Random (Control)"));
                 // add(new RandomChoicePlayer("RC 20", 20, 1000));
                 // add(new RandomChoicePlayer("RC 5", 5, 1000));
-                add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20), new RandomPointChoiceStrategy(20),
+                add(new PointChoicePlayer("RC 25", new RandomPointChoiceStrategy(25), new RandomPointChoiceStrategy(20),
                         2000));
                 // add(new PointChoicePlayer("Gridmaster 81", new GridPointChoiceStrategy(10),
                 // new GridPointChoiceStrategy(10),

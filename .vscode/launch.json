@@ -31,6 +31,12 @@
       "request": "launch",
       "mainClass": "GraphXings.Gruppe5Algo.Run.RunDebug",
       "projectName": "GraphXings_3c50f9b8"
+    },
+    {
+      "type": "java",
+      "name": "RunGui",
+      "request": "launch",
+      "mainClass": "GraphXings.Gruppe5Algo.Run.RunGui",
     }
   ]
 }
