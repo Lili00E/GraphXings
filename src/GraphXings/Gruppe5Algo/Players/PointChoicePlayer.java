@@ -168,13 +168,13 @@ public class PointChoicePlayer implements NewPlayer {
         Vertex v = chooseNextVertexWithEdge(maximizeCrossings);
 
         if (maximizeCrossings) {
-            var randomCoords = maxPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,
-                    gs.getPlacedVertices(), maxPoints);
+            var randomCoords = maxPointChoiceStrategy.getCoordinatesToTry(width, height,
+                    maxPoints, this.gs);
             var c = getBestOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         } else {
-            var randomCoords = minPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,
-                    gs.getPlacedVertices(), maxPoints);
+            var randomCoords = minPointChoiceStrategy.getCoordinatesToTry(width, height,
+                    maxPoints, this.gs );
             var c = getWorstOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         }
