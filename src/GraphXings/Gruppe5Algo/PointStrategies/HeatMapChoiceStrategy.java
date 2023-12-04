@@ -11,20 +11,13 @@ import GraphXings.Gruppe5Algo.Models.HeatMap;
 public class HeatMapChoiceStrategy implements PointChoiceStrategy {
 
     private HeatMap heatMap;
-    private int maxPoints;
-
-    public HeatMapChoiceStrategy(HeatMap map, int maxPoints) {
-        this.heatMap = map;
-        this.maxPoints = maxPoints;
-    }
 
     public HeatMapChoiceStrategy(HeatMap map) {
         this.heatMap = map;
-        this.maxPoints = 20;
     }
 
     private Coordinate getRandomUnusedCoord(Random r, int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices) {
+                                            HashSet<Vertex> placedVertices) {
 
         Coordinate c;
         int x, y;
@@ -45,7 +38,7 @@ public class HeatMapChoiceStrategy implements PointChoiceStrategy {
 
     @Override
     public ArrayList<Coordinate> getCoordinatesToTry(int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices) {
+            HashSet<Vertex> placedVertices, int maxPoints) {
         Random r = new Random();
         var randomCoords = new ArrayList<Coordinate>();
 

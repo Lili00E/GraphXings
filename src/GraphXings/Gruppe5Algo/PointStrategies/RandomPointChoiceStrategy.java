@@ -31,12 +31,12 @@ public class RandomPointChoiceStrategy implements PointChoiceStrategy {
 
     @Override
     public ArrayList<Coordinate> getCoordinatesToTry(int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices) {
+            HashSet<Vertex> placedVertices, int maxPoints) {
         Random r = new Random();
         var randomCoords = new ArrayList<Coordinate>();
 
         int maxAvailableCoords = (width * height) - placedVertices.size();
-        int numPoints = Math.min(maxAvailableCoords, maxPoints);
+        int numPoints = Math.min(maxAvailableCoords, this.maxPoints);
 
         for (var i = 0; i < numPoints; i++) {
             var newCoord = getRandomUnusedCoord(r, usedCoordinates, width, height, placedVertices);

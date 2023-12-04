@@ -40,7 +40,7 @@ public class RandomChoicePlayer implements NewPlayer {
         this.g = g;
         this.width = width;
         this.height = height;
-        this.gs = new GameState(width, height);
+        this.gs = new GameState(g, width, height);
         if (this.gridStatisticMax == null) {
             this.gridStatisticMax = new int[(height / 10) * (width / 10) + 1];
             this.gridStatisticMin = new int[(height / 10) * (width / 10) + 1];

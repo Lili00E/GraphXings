@@ -20,8 +20,8 @@ public class RunDebug {
 
         int numGames = 1000;
         int numNodes = 10;
-        int width = 1000;
-        int height = 10000;
+        int width = 10;
+        int height = 10;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -51,23 +51,20 @@ public class RunDebug {
                 .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
         var minHeatMap = new HeatMapFileReader()
                 .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMapMini.txt");
+        var smallHeatMapMin = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+        var smallHeatMapMax = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
-//        var myPlayer = new PointChoicePlayer("My Player: Min as Min", new HeatMapChoiceStrategy(minHeatMap),
-//                new HeatMapChoiceStrategy(maxHeatMap), 2000);
-        var myPlayer = new PointChoicePlayer("My Player: Max as Min", new HeatMapChoiceStrategy(maxHeatMap),
-                new HeatMapChoiceStrategy(minHeatMap), 2000);
+        var myPlayer = new PointChoicePlayer("My Player: Min as Min", new HeatMapChoiceStrategy(smallHeatMapMin),
+                new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
+//        var myPlayer = new PointChoicePlayer("My Player: Max as Min", new HeatMapChoiceStrategy(maxHeatMap),
+//                new HeatMapChoiceStrategy(minHeatMap), 2000);
 
         var competitors = new ArrayList<NewPlayer>() {
             {
-                // add(new NewRandomPlayer("Random (Control)"));
-                // add(new RandomChoicePlayer("RC 20", 20, 1000));
-                // add(new RandomChoicePlayer("RC 5", 5, 1000));
                 add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20), new RandomPointChoiceStrategy(20),
                         2000));
-                // add(new PointChoicePlayer("Gridmaster 81", new GridPointChoiceStrategy(10),
-                // new GridPointChoiceStrategy(10),
-                // 2000));
-                // add(new RandomChoicePlayerTest("Minimize with edges", 20, 2000));
             }
         };
 

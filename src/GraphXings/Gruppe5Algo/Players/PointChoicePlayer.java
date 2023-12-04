@@ -24,12 +24,15 @@ public class PointChoicePlayer implements NewPlayer {
     private PointChoiceStrategy minPointChoiceStrategy;
     private PointChoiceStrategy maxPointChoiceStrategy;
 
+    private int maxPoints;
+
     public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy,
             int timoutMilliseconds) {
         this.name = name;
         this.maxPointChoiceStrategy = maxStrategy;
         this.minPointChoiceStrategy = minStrategy;
         this.timoutMilliseconds = timoutMilliseconds;
+        this.maxPoints = 0;
     }
 
     @Override
@@ -43,6 +46,27 @@ public class PointChoicePlayer implements NewPlayer {
         this.width = width;
         this.height = height;
         this.gs = new GameState(g, width, height);
+        if (this.maxPoints == 0) {
+            this.maxPoints = setMaxPoints();
+        }
+//        if (minPointChoiceStrategy == null){
+//
+//        }
+    }
+
+    private int setMaxPoints(){
+        int numNodes = this.g.getN();
+        if (numNodes <= 100) {
+            return 150;
+        } else if(numNodes <= 500){
+            return 100;
+        } else if(numNodes <= 1000){
+            return 50;
+        } else if(numNodes <= 7000){
+            return 20;
+        } else{
+            return 10;
+        }
     }
 
     @Override
@@ -145,12 +169,12 @@ public class PointChoicePlayer implements NewPlayer {
 
         if (maximizeCrossings) {
             var randomCoords = maxPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,
-                    gs.getPlacedVertices());
+                    gs.getPlacedVertices(), maxPoints);
             var c = getBestOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         } else {
             var randomCoords = minPointChoiceStrategy.getCoordinatesToTry(gs.getUsedCoordinates(), width, height,
-                    gs.getPlacedVertices());
+                    gs.getPlacedVertices(), maxPoints);
             var c = getWorstOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         }

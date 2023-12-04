@@ -17,7 +17,7 @@ public class GridPointChoiceStrategy implements PointChoiceStrategy {
 
     @Override
     public ArrayList<Coordinate> getCoordinatesToTry(int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices) {
+            HashSet<Vertex> placedVertices, int maxPoint) {
 
         Random r = new Random();
         int intervalSizeX = width / divider;
