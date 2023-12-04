@@ -18,9 +18,9 @@ import java.util.ArrayList;
 public class RunDebug {
     public static void main(String[] args) {
 
-        int numGames = 10;
-        int numNodes = 1000;
-        int width = 10000;
+        int numGames = 1000;
+        int numNodes = 10;
+        int width = 1000;
         int height = 10000;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
@@ -48,19 +48,21 @@ public class RunDebug {
 
         // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
         var maxHeatMap = new HeatMapFileReader()
-                .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMapMini.txt");
+                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
         var minHeatMap = new HeatMapFileReader()
-                .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
+                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMapMini.txt");
 
-        var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(minHeatMap),
-                new HeatMapChoiceStrategy(maxHeatMap), 2000);
+//        var myPlayer = new PointChoicePlayer("My Player: Min as Min", new HeatMapChoiceStrategy(minHeatMap),
+//                new HeatMapChoiceStrategy(maxHeatMap), 2000);
+        var myPlayer = new PointChoicePlayer("My Player: Max as Min", new HeatMapChoiceStrategy(maxHeatMap),
+                new HeatMapChoiceStrategy(minHeatMap), 2000);
 
         var competitors = new ArrayList<NewPlayer>() {
             {
                 // add(new NewRandomPlayer("Random (Control)"));
                 // add(new RandomChoicePlayer("RC 20", 20, 1000));
                 // add(new RandomChoicePlayer("RC 5", 5, 1000));
-                add(new PointChoicePlayer("RC 25", new RandomPointChoiceStrategy(25), new RandomPointChoiceStrategy(20),
+                add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20), new RandomPointChoiceStrategy(20),
                         2000));
                 // add(new PointChoicePlayer("Gridmaster 81", new GridPointChoiceStrategy(10),
                 // new GridPointChoiceStrategy(10),
@@ -72,6 +74,13 @@ public class RunDebug {
         for (NewPlayer competitor : competitors) {
             var player1 = myPlayer;
             var player2 = competitor;
+
+            if (!winners.containsKey(player1.getName())) {
+                winners.put(player1.getName(), 0);
+            }
+            if (!winners.containsKey(player2.getName())) {
+                winners.put(player2.getName(), 0);
+            }
 
             System.out.println("Starting matchup " + player1.getName() + " vs. " + player2.getName());
             for (int i = 0; i < numGames; i++) {
