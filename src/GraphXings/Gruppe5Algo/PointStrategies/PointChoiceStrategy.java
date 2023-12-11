@@ -1,14 +1,13 @@
 package GraphXings.Gruppe5Algo.PointStrategies;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 
 import GraphXings.Data.Coordinate;
-import GraphXings.Data.Vertex;
+import GraphXings.Game.GameState;
 
 public interface PointChoiceStrategy {
 
-    public ArrayList<Coordinate> getCoordinatesToTry(int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices, int maxPoints);
+    public ArrayList<Coordinate> getCoordinatesToTry(int width, int height,
+                                                     int maxPoints, GameState gs);
 
 }

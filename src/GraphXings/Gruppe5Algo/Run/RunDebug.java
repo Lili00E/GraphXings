@@ -1,6 +1,8 @@
 package GraphXings.Gruppe5Algo.Run;
 
 import GraphXings.Algorithms.NewPlayer;
+import GraphXings.Competitors.Group10.GridPlayer;
+import GraphXings.Competitors.Group10.NewBetterFasterPlayer;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
 import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
@@ -19,10 +21,10 @@ import java.util.ArrayList;
 public class RunDebug {
     public static void main(String[] args) {
 
-        int numGames = 1;
-        int numNodes = 3000;
-        int width = 1000;
-        int height = 1000;
+        int numGames = 100;
+        int numNodes = 50;
+        int width = 10;
+        int height = 10;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -59,17 +61,23 @@ public class RunDebug {
             var smallHeatMapMax = new HeatMapFileReader()
                     .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
-            var myPlayer = new PointChoicePlayer("My Player: max,max", new HeatMapChoiceStrategy(minHeatMap),
-                    new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
+            // var myPlayer = new PointChoicePlayer("My Player: Min as Min", new
+            // HeatMapChoiceStrategy(minHeatMap),
+            // new HeatMapChoiceStrategy(maxHeatMap), 2000);
             // var myPlayer = new PointChoicePlayer("My Player: Max as Min", new
-            // HeatMapChoiceStrategy(maxHeatMap),
-            // new HeatMapChoiceStrategy(minHeatMap), 2000);
+            // HeatMapChoiceStrategy(smallHeatMapMax),
+            // new HeatMapChoiceStrategy(smallHeatMapMin), 2000);
+            var myPlayer = new PointChoicePlayer("My Player: only Max", new HeatMapChoiceStrategy(smallHeatMapMax),
+                    new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
 
             var competitors = new ArrayList<NewPlayer>() {
                 {
                     add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20),
                             new RandomPointChoiceStrategy(20),
                             2000));
+                    // add(new GridPlayer("Group 10"));
+                    // add(new NewBetterFasterPlayer("Better Faster Player"));
+
                 }
             };
 

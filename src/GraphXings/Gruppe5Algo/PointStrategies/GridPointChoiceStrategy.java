@@ -1,11 +1,10 @@
 package GraphXings.Gruppe5Algo.PointStrategies;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Random;
 
 import GraphXings.Data.Coordinate;
-import GraphXings.Data.Vertex;
+import GraphXings.Game.GameState;
 
 public class GridPointChoiceStrategy implements PointChoiceStrategy {
 
@@ -16,8 +15,8 @@ public class GridPointChoiceStrategy implements PointChoiceStrategy {
     }
 
     @Override
-    public ArrayList<Coordinate> getCoordinatesToTry(int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices, int maxPoint) {
+    public ArrayList<Coordinate> getCoordinatesToTry(int width, int height,
+                                                     int maxPoint, GameState gs) {
 
         Random r = new Random();
         int intervalSizeX = width / divider;
@@ -37,7 +36,7 @@ public class GridPointChoiceStrategy implements PointChoiceStrategy {
                     y = j + r.nextInt(intervalSizeY);
                     c = new Coordinate(x, y);
                     numTries++;
-                } while (usedCoordinates[x][y] == 1 && numTries < maxRetriesForEachGridSection);
+                } while (gs.getUsedCoordinates()[x][y] == 1 && numTries < maxRetriesForEachGridSection);
                 coords.add(c);
             }
         }
