@@ -6,6 +6,7 @@ import java.util.Random;
 
 import GraphXings.Data.Coordinate;
 import GraphXings.Data.Vertex;
+import GraphXings.Game.GameState;
 import GraphXings.Gruppe5Algo.Models.HeatMap;
 
 public class HeatMapChoiceStrategy implements PointChoiceStrategy {
@@ -46,16 +47,15 @@ public class HeatMapChoiceStrategy implements PointChoiceStrategy {
     }
 
     @Override
-    public ArrayList<Coordinate> getCoordinatesToTry(int[][] usedCoordinates, int width, int height,
-            HashSet<Vertex> placedVertices, int maxPoints) {
+    public ArrayList<Coordinate> getCoordinatesToTry(int width, int height, int maxPoints, GameState gs) {
         Random r = new Random();
         var randomCoords = new ArrayList<Coordinate>();
 
-        int maxAvailableCoords = (width * height) - placedVertices.size();
+        int maxAvailableCoords = (width * height) - gs.getPlacedVertices().size();
         int numPoints = Math.min(maxAvailableCoords, maxPoints);
 
         for (var i = 0; i < numPoints; i++) {
-            var newCoord = getRandomUnusedCoord(r, usedCoordinates, width, height, placedVertices);
+            var newCoord = getRandomUnusedCoord(r, gs.getUsedCoordinates(), width, height, gs.getPlacedVertices());
             randomCoords.add(newCoord);
         }
         return randomCoords;

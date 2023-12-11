@@ -2,8 +2,8 @@ package GraphXings.Gruppe5Algo.Run;
 
 import java.io.FileNotFoundException;
 
-import GUI.GUI.GuiGame;
 import GraphXings.Game.NewGameResult;
+import GraphXings.Gruppe5Algo.GUI.GuiGame;
 import GraphXings.Gruppe5Algo.Models.HeatMap;
 import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
 import GraphXings.Gruppe5Algo.Players.PointChoicePlayer;

@@ -1,8 +1,7 @@
 package GraphXings.Gruppe5Algo.Run;
 
 import GraphXings.Algorithms.NewPlayer;
-import GraphXings.Competitors.Group10.GridPlayer;
-import GraphXings.Competitors.Group10.NewBetterFasterPlayer;
+
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
 import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
@@ -52,12 +51,12 @@ public class RunDebug {
         // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
         try {
 
-            var maxHeatMap = new HeatMapFileReader()
-                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
-            var minHeatMap = new HeatMapFileReader()
-                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
-            var smallHeatMapMin = new HeatMapFileReader()
-                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+            // var maxHeatMap = new HeatMapFileReader()
+            // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
+            // var minHeatMap = new HeatMapFileReader()
+            // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+            // var smallHeatMapMin = new HeatMapFileReader()
+            // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
             var smallHeatMapMax = new HeatMapFileReader()
                     .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
