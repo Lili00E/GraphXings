@@ -10,6 +10,7 @@ import GraphXings.Gruppe5Algo.Utils.WeightedNumberGenerator;
 public class HeatMapFileReader {
 
     public HeatMap readFromFile(String fileName) throws FileNotFoundException {
+        final double epsilon = 0.01;
         try {
             File file = new File(fileName);
             Scanner scanner = new Scanner(file);
@@ -22,6 +23,9 @@ public class HeatMapFileReader {
                 var numbers = data.split(" ");
                 for (String numString : numbers) {
                     var num = Double.parseDouble(numString);
+                    if (num == 0) {
+                        num = epsilon;
+                    }
                     weightList.add(num);
                     sum += num;
                 }
@@ -32,6 +36,7 @@ public class HeatMapFileReader {
             double[] weights = new double[width * height];
             for (int i = 0; i < weightList.size(); i++) {
                 weights[i] = weightList.get(i) / sum;
+
             }
             scanner.close();
             return new HeatMap(new WeightedNumberGenerator(weights), width, height);

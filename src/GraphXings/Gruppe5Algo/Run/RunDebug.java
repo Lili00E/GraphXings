@@ -22,8 +22,8 @@ public class RunDebug {
 
         int numGames = 100;
         int numNodes = 50;
-        int width = 10;
-        int height = 10;
+        int width = 10000;
+        int height = 10000;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -35,28 +35,14 @@ public class RunDebug {
 
         var progressBar = new ProgressBar(100, '=');
 
-        // var heatMapSize = 100;
-        // var totalSize = heatMapSize * heatMapSize;
-        // double[] weights = new double[totalSize];
-
-        // double p = 1.0 / (double) totalSize;
-
-        // System.out.println(p);
-
-        // for (int i = 0; i < weights.length; i++) {
-        // weights[i] = p;
-        // }
-        // var generator = new WeightedNumberGenerator(weights);
-
-        // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
         try {
 
             // var maxHeatMap = new HeatMapFileReader()
             // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
-            // var minHeatMap = new HeatMapFileReader()
-            // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
-            // var smallHeatMapMin = new HeatMapFileReader()
-            // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+            var minHeatMap = new HeatMapFileReader()
+                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+            var smallHeatMapMin = new HeatMapFileReader()
+                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
             var smallHeatMapMax = new HeatMapFileReader()
                     .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
@@ -66,12 +52,12 @@ public class RunDebug {
             // var myPlayer = new PointChoicePlayer("My Player: Max as Min", new
             // HeatMapChoiceStrategy(smallHeatMapMax),
             // new HeatMapChoiceStrategy(smallHeatMapMin), 2000);
-            var myPlayer = new PointChoicePlayer("My Player: only Max", new HeatMapChoiceStrategy(smallHeatMapMax),
+            var myPlayer = new PointChoicePlayer("My Player: only Max", new HeatMapChoiceStrategy(smallHeatMapMin),
                     new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
 
             var competitors = new ArrayList<NewPlayer>() {
                 {
-                    add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20),
+                    add(new PointChoicePlayer("RC 150", new RandomPointChoiceStrategy(150),
                             new RandomPointChoiceStrategy(20),
                             2000));
                     // add(new GridPlayer("Group 10"));
