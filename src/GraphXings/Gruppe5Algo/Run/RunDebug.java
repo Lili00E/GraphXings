@@ -1,8 +1,8 @@
 package GraphXings.Gruppe5Algo.Run;
 
 import GraphXings.Algorithms.NewPlayer;
-import GraphXings.Competitors.Group10.GridPlayer;
-import GraphXings.Competitors.Group10.NewBetterFasterPlayer;
+//import GraphXings.Competitors.Group10.GridPlayer;
+//import GraphXings.Competitors.Group10.NewBetterFasterPlayer;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
 import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
