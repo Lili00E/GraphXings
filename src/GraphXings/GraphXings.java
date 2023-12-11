@@ -9,6 +9,7 @@ import GraphXings.Data.Graph;
 import GraphXings.Data.Vertex;
 import GraphXings.Game.GameInstance.ConstantGameInstanceFactory;
 import GraphXings.Game.GameInstance.GameInstanceFactory;
+import GraphXings.Game.GameInstance.RandomCycleFactory;
 import GraphXings.Game.Match.NewMatch;
 import GraphXings.Game.Match.NewMatchResult;
 import GraphXings.Game.NewGame;
@@ -33,9 +34,9 @@ public class GraphXings {
         HeatMap minHeatMap, maxHeatMap;
         try {
             maxHeatMap = new HeatMapFileReader()
-                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SimpleHeatMap.txt");
+                    .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SimpleHeatMap.txt");
             minHeatMap = new HeatMapFileReader()
-                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+                    .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
         } catch (FileNotFoundException e) {
             return;
 
@@ -47,7 +48,8 @@ public class GraphXings {
         NewPlayer player2 = new NewRandomPlayer("Random Player");
         // NewPlayer player1 = new RandomChoicePlayerOld("My Old Player",
         // samplePointsPerMove, timeoutInMilliseconds);
-        GameInstanceFactory gi = new ConstantGameInstanceFactory(g, width, height);
+        //GameInstanceFactory gi = new ConstantGameInstanceFactory(g, width, height);
+        GameInstanceFactory gi = new RandomCycleFactory(12060351, true);
 
         var startTime = System.currentTimeMillis();
 
