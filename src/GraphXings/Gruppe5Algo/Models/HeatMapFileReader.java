@@ -9,7 +9,7 @@ import GraphXings.Gruppe5Algo.Utils.WeightedNumberGenerator;
 
 public class HeatMapFileReader {
 
-    public HeatMap readFromFile(String fileName) {
+    public HeatMap readFromFile(String fileName) throws FileNotFoundException {
         try {
             File file = new File(fileName);
             Scanner scanner = new Scanner(file);
@@ -39,7 +39,7 @@ public class HeatMapFileReader {
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
-            return null;
+            throw new FileNotFoundException("The Heatmap you loaded, doesn't exist under " + fileName);
         }
     }
 

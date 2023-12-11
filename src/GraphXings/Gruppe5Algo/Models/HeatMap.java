@@ -27,6 +27,10 @@ public class HeatMap {
         this.width = width;
         this.height = height;
 
+        if (width == 0 || height == 0) {
+            System.out.println("ERROR invalid HeatMap detected...");
+        }
+
         if (this.width * this.height != this.generator.getWeights().length) {
             System.out.println("ERROR invalid HeatMap detected...");
         }

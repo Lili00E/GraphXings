@@ -17,18 +17,27 @@ public class HeatMapChoiceStrategy implements PointChoiceStrategy {
     }
 
     private Coordinate getRandomUnusedCoord(Random r, int[][] usedCoordinates, int width, int height,
-                                            HashSet<Vertex> placedVertices) {
+            HashSet<Vertex> placedVertices) {
 
         Coordinate c;
         int x, y;
 
-        int stepWidth = width / heatMap.getWidth();
-        int stepHeight = height / heatMap.getHeight();
+        float stepWidth = (float) width / (float) heatMap.getWidth();
+        float stepHeight = (float) height / (float) heatMap.getHeight();
 
         do {
             c = heatMap.chooseWeightedCoord();
-            x = c.getX() * stepWidth + r.nextInt(stepWidth);
-            y = c.getY() * stepHeight + r.nextInt(stepHeight);
+            if (stepWidth > 1) {
+                x = c.getX() * (int) stepWidth + r.nextInt((int) stepWidth);
+            } else {
+                x = (int) ((float) c.getX() * stepWidth);
+            }
+            if (stepHeight > 1) {
+                y = c.getY() * (int) stepHeight + r.nextInt((int) stepHeight);
+
+            } else {
+                y = (int) ((float) c.getY() * stepHeight);
+            }
 
         } while (usedCoordinates[x][y] != 0);
 

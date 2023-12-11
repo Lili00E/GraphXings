@@ -10,6 +10,7 @@ import GraphXings.Gruppe5Algo.PointStrategies.RandomPointChoiceStrategy;
 import GraphXings.Gruppe5Algo.Utils.ProgressBar;
 import GraphXings.Gruppe5Algo.Utils.SpecificRandomCycleFactory;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,10 +19,10 @@ import java.util.ArrayList;
 public class RunDebug {
     public static void main(String[] args) {
 
-        int numGames = 1000;
-        int numNodes = 10;
-        int width = 10;
-        int height = 10;
+        int numGames = 1;
+        int numNodes = 3000;
+        int width = 1000;
+        int height = 1000;
         var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
         var gameInstance = randomFactory.getGameInstance();
@@ -47,67 +48,74 @@ public class RunDebug {
         // var generator = new WeightedNumberGenerator(weights);
 
         // var heatMap = new HeatMap(generator, heatMapSize, heatMapSize);
-        var maxHeatMap = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
-        var minHeatMap = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMapMini.txt");
-        var smallHeatMapMin = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
-        var smallHeatMapMax = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+        try {
 
-        var myPlayer = new PointChoicePlayer("My Player: Min as Min", new HeatMapChoiceStrategy(smallHeatMapMin),
-                new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
-//        var myPlayer = new PointChoicePlayer("My Player: Max as Min", new HeatMapChoiceStrategy(maxHeatMap),
-//                new HeatMapChoiceStrategy(minHeatMap), 2000);
+            var maxHeatMap = new HeatMapFileReader()
+                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
+            var minHeatMap = new HeatMapFileReader()
+                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+            var smallHeatMapMin = new HeatMapFileReader()
+                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+            var smallHeatMapMax = new HeatMapFileReader()
+                    .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
-        var competitors = new ArrayList<NewPlayer>() {
-            {
-                add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20), new RandomPointChoiceStrategy(20),
-                        2000));
-            }
-        };
+            var myPlayer = new PointChoicePlayer("My Player: max,max", new HeatMapChoiceStrategy(minHeatMap),
+                    new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
+            // var myPlayer = new PointChoicePlayer("My Player: Max as Min", new
+            // HeatMapChoiceStrategy(maxHeatMap),
+            // new HeatMapChoiceStrategy(minHeatMap), 2000);
 
-        for (NewPlayer competitor : competitors) {
-            var player1 = myPlayer;
-            var player2 = competitor;
-
-            if (!winners.containsKey(player1.getName())) {
-                winners.put(player1.getName(), 0);
-            }
-            if (!winners.containsKey(player2.getName())) {
-                winners.put(player2.getName(), 0);
-            }
-
-            System.out.println("Starting matchup " + player1.getName() + " vs. " + player2.getName());
-            for (int i = 0; i < numGames; i++) {
-                NewGame game = new NewGame(gameInstance.getG(), gameInstance.getHeight(), gameInstance.getWidth(),
-                        player1, player2);
-                NewGameResult res = game.play();
-
-                progressBar.printProgressDiscrete(i + 1, numGames);
-
-                var winnerPlayer = res.getWinner();
-                if (winnerPlayer == null) {
-                    continue;
+            var competitors = new ArrayList<NewPlayer>() {
+                {
+                    add(new PointChoicePlayer("RC 20", new RandomPointChoiceStrategy(20),
+                            new RandomPointChoiceStrategy(20),
+                            2000));
                 }
-                var winner = winnerPlayer.getName();
-                if (winners.containsKey(winner)) {
-                    winners.put(winner, winners.get(winner) + 1);
-                } else {
-                    winners.put(winner, 1);
+            };
+
+            for (NewPlayer competitor : competitors) {
+                var player1 = myPlayer;
+                var player2 = competitor;
+
+                if (!winners.containsKey(player1.getName())) {
+                    winners.put(player1.getName(), 0);
+                }
+                if (!winners.containsKey(player2.getName())) {
+                    winners.put(player2.getName(), 0);
                 }
 
+                System.out.println("Starting matchup " + player1.getName() + " vs. " + player2.getName());
+                for (int i = 0; i < numGames; i++) {
+                    NewGame game = new NewGame(gameInstance.getG(), gameInstance.getHeight(), gameInstance.getWidth(),
+                            player1, player2);
+                    NewGameResult res = game.play();
+
+                    progressBar.printProgressDiscrete(i + 1, numGames);
+
+                    var winnerPlayer = res.getWinner();
+                    if (winnerPlayer == null) {
+                        continue;
+                    }
+                    var winner = winnerPlayer.getName();
+                    if (winners.containsKey(winner)) {
+                        winners.put(winner, winners.get(winner) + 1);
+                    } else {
+                        winners.put(winner, 1);
+                    }
+
+                }
+
+                progressBar.clearOutput();
+
+                System.out.println("Win distribution for " + player1.getName() + " vs. " + player2.getName());
+                progressBar.printProgressDiscrete(winners.get(player1.getName()), numGames);
+
+                System.out.println();
+                winners = new HashMap<>();
+
             }
-
-            progressBar.clearOutput();
-
-            System.out.println("Win distribution for " + player1.getName() + " vs. " + player2.getName());
-            progressBar.printProgressDiscrete(winners.get(player1.getName()), numGames);
-
-            System.out.println();
-            winners = new HashMap<>();
-
+        } catch (FileNotFoundException e) {
+            System.out.println("HEATMAP File not found " + e.toString());
         }
 
     }

@@ -49,22 +49,22 @@ public class PointChoicePlayer implements NewPlayer {
         if (this.maxPoints == 0) {
             this.maxPoints = setMaxPoints();
         }
-//        if (minPointChoiceStrategy == null){
-//
-//        }
+        // if (minPointChoiceStrategy == null){
+        //
+        // }
     }
 
-    private int setMaxPoints(){
+    private int setMaxPoints() {
         int numNodes = this.g.getN();
         if (numNodes <= 100) {
             return 150;
-        } else if(numNodes <= 500){
+        } else if (numNodes <= 500) {
             return 100;
-        } else if(numNodes <= 1000){
-            return 50;
-        } else if(numNodes <= 7000){
-            return 20;
-        } else{
+        } else if (numNodes <= 1000) {
+            return 40;
+        } else if (numNodes <= 7000) {
+            return 15;
+        } else {
             return 10;
         }
     }
