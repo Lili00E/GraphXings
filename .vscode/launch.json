@@ -8,35 +8,30 @@
       "type": "java",
       "name": "GraphXings",
       "request": "launch",
-      "mainClass": "GraphXings.GraphXings",
-      "projectName": "GraphXings_44c64d67"
+      "mainClass": "GraphXings.GraphXings"
     },
     {
       "type": "java",
       "name": "RunDebug",
       "request": "launch",
-      "mainClass": "GraphXings.Gruppe5Algo.Run.RunDebug",
-      "projectName": "GraphXings_44c64d67"
+      "mainClass": "GraphXings.Gruppe5Algo.Run.RunDebug"
     },
     {
       "type": "java",
       "name": "GraphXings",
       "request": "launch",
-      "mainClass": "GraphXings.GraphXings",
-      "projectName": "GraphXings_3c50f9b8"
+      "mainClass": "GraphXings.GraphXings"
     },
     {
       "type": "java",
       "name": "RunDebug",
       "request": "launch",
-      "mainClass": "GraphXings.Gruppe5Algo.Run.RunDebug",
-      "projectName": "GraphXings_3c50f9b8"
+      "mainClass": "GraphXings.Gruppe5Algo.Run.RunDebug"
     },
     {
       "type": "java",
       "name": "RunGui",
-      "request": "launch",
-      "mainClass": "GraphXings.Gruppe5Algo.Run.RunGui",
+      "request": "launch"
     }
   ]
 }
