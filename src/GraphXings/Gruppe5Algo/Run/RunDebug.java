@@ -23,10 +23,10 @@ import java.util.ArrayList;
 public class RunDebug {
   public static void main(String[] args) {
 
-    int numGames = 100;
+    int numGames = 10;
     int numNodes = 50;
-    int width = 10000;
-    int height = 10000;
+    int width = 1000;
+    int height = 1000;
     var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
 
     var gameInstance = randomFactory.getGameInstance();
@@ -41,13 +41,13 @@ public class RunDebug {
     try {
 
       // var maxHeatMap = new HeatMapFileReader()
-      // .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
+      // .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
       var minHeatMap = new HeatMapFileReader()
-          .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+          .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
       var smallHeatMapMin = new HeatMapFileReader()
-          .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+          .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
       var smallHeatMapMax = new HeatMapFileReader()
-          .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+          .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
       // var myPlayer = new PointChoicePlayer("My Player: Min as Min", new
       // HeatMapChoiceStrategy(minHeatMap),

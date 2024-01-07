@@ -60,6 +60,16 @@ public class RandomChoicePlayer implements NewPlayer {
 
     }
 
+    @Override
+    public GameMove maximizeCrossingAngles(GameMove lastMove) {
+        return null;
+    }
+
+    @Override
+    public GameMove minimizeCrossingAngles(GameMove lastMove) {
+        return null;
+    }
+
     private Coordinate getRandomUnusedCoord(Random r) {
 
         var x = r.nextInt(width);

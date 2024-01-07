@@ -66,6 +66,16 @@ public class RecursiveSearchPlayer implements NewPlayer {
 
   }
 
+  @Override
+  public GameMove maximizeCrossingAngles(GameMove lastMove) {
+    return null;
+  }
+
+  @Override
+  public GameMove minimizeCrossingAngles(GameMove lastMove) {
+    return null;
+  }
+
   private GameMove getRandomGameMove() {
     Random r = new Random();
     int stillToBePlaced = g.getN() - gs.getPlacedVertices().size();
