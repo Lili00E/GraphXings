@@ -59,15 +59,15 @@ public class PointChoicePlayer implements NewPlayer {
   private int setMaxPoints() {
     int numNodes = this.g.getN();
     if (numNodes <= 100) {
-      return 150;
+      return 50;
     } else if (numNodes <= 500) {
-      return 100;
+      return 20;
     } else if (numNodes <= 1000) {
-      return 40;
-    } else if (numNodes <= 7000) {
-      return 15;
-    } else {
       return 10;
+    } else if (numNodes <= 7000) {
+      return 5;
+    } else {
+      return 2;
     }
   }
 
