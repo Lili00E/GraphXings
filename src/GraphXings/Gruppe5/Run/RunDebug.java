@@ -1,23 +1,23 @@
 package GraphXings.Gruppe5.Run;
 
-import GraphXings.Algorithms.NewPlayer;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 
-import GraphXings.Game.GameInstance.PlanarGameInstanceFactory;
+import GraphXings.Algorithms.NewPlayer;
+import GraphXings.Algorithms.NewRandomPlayer;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
+import GraphXings.Game.GameInstance.PlanarGameInstanceFactory;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
 import GraphXings.Gruppe5.Players.RecursiveSearchPlayer;
 import GraphXings.Gruppe5.PointStrategies.RandomPointChoiceStrategy;
 import GraphXings.Gruppe5.Utils.SpecificRandomCycleFactory;
 import GraphXings.Gruppe5.Utils.VsBar;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.ArrayList;
 
 public class RunDebug {
   public static void main(String[] args) {
@@ -29,7 +29,6 @@ public class RunDebug {
     var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
     long seed = 27081883;
     PlanarGameInstanceFactory factory = new PlanarGameInstanceFactory(seed);
-
 
     var gameInstance = factory.getGameInstance();
 
@@ -44,12 +43,12 @@ public class RunDebug {
 
       // var maxHeatMap = new HeatMapFileReader()
       // .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
-      var minHeatMap = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/UniformHeatMap.txt");
-      var smallHeatMapMin = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+      // var minHeatMap = new HeatMapFileReader()
+      // .readFromFile(".//Gruppe5/PointStrategies/HeatMaps/UniformHeatMap.txt");
+      // var smallHeatMapMin = new HeatMapFileReader()
+      // .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
       var smallHeatMapMax = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+          .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
       // var myPlayer = new PointChoicePlayer("My Player: Min as Min", new
       // HeatMapChoiceStrategy(minHeatMap),
@@ -57,17 +56,23 @@ public class RunDebug {
       // var myPlayer = new PointChoicePlayer("My Player: Max as Min", new
       // HeatMapChoiceStrategy(smallHeatMapMax),
       // new HeatMapChoiceStrategy(smallHeatMapMin), 2000);
-      var myPlayer = new RecursiveSearchPlayer("My Player: Recursive Search", 5, 100, 100, 20000);
-//      var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
-//              new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
+      // var myPlayer = new RecursiveSearchPlayer("My Player: Recursive Search", 0,
+      // 10, 10, 20000);
+      var myPlayer = new RecursiveSearchPlayer("RS Player", 0, 10, 10, 200);
+      // var myPlayer = new
+      // PointChoicePlayer("My Player", new
+      // HeatMapChoiceStrategy(smallHeatMapMin),
+      // new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
       var competitors = new ArrayList<NewPlayer>() {
         {
 
-          add(new PointChoicePlayer("RC 150", new RandomPointChoiceStrategy(150),
-              new RandomPointChoiceStrategy(20),
-              2000));
-//          add(new PointChoicePlayer("My Player: only Max", new HeatMapChoiceStrategy(smallHeatMapMin),
-//              new HeatMapChoiceStrategy(smallHeatMapMax), 2000));
+          // add(new PointChoicePlayer("RC 150", new RandomPointChoiceStrategy(10),
+          // new RandomPointChoiceStrategy(20),
+          // 2000));
+          add(new NewRandomPlayer("dummy"));
+          // add(new PointChoicePlayer("My Player: only Max", new
+          // HeatMapChoiceStrategy(smallHeatMapMin),
+          // new HeatMapChoiceStrategy(smallHeatMapMax), 2000));
           // add(new GridPlayer("Group 10"));
           // add(new NewBetterFasterPlayer("Better Faster Player"));
 

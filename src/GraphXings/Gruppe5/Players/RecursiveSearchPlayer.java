@@ -24,21 +24,22 @@ public class RecursiveSearchPlayer implements NewPlayer {
 
   private Role role;
 
-  private int numberOfNodes;
-  private int maxGridSize;
   private int numberOfPositionsPerCell;
+  private int searchDepth;
+  private int gridDivider;
 
   private GameMove bestMove;
 
   public RecursiveSearchPlayer(
       String name,
-      int numberOfNodes,
-      int maxGridSize,
+      int searchDepth,
+      int gridSize,
       int numberOfPositionsPerCell,
-
       int timoutMilliseconds) {
     this.name = name;
     this.timoutMilliseconds = timoutMilliseconds;
+    this.searchDepth = searchDepth;
+    this.gridDivider = gridSize;
   }
 
   @Override
@@ -146,10 +147,11 @@ public class RecursiveSearchPlayer implements NewPlayer {
 
     ArrayList<Coordinate> coords = new ArrayList<>();
 
-    for (int i = intervalSizeX; i < width; i += intervalSizeX) {
-      for (int j = intervalSizeY; j < height; j += intervalSizeY) {
+    for (int i = intervalSizeX; i < intervalSizeX * divider; i += intervalSizeX) {
+      for (int j = intervalSizeY; j < intervalSizeY * divider; j += intervalSizeY) {
         int x;
         int y;
+
         int numTries = 0;
         Coordinate c;
         do {
@@ -195,7 +197,7 @@ public class RecursiveSearchPlayer implements NewPlayer {
       boolean maximizeCrossings, int depth) {
 
     ArrayList<Coordinate> possibleCoordinates = getCoordinatesToTry(width, height,
-        10, gs, 4);
+        numberOfPositionsPerCell, gs, gridDivider);
 
     var scoredCoordinates = evaluatePositions(possibleCoordinates, v, maximizeCrossings, depth);
 
@@ -221,16 +223,15 @@ public class RecursiveSearchPlayer implements NewPlayer {
   private GameMove generateMove(boolean maximizeCrossings) {
 
     Vertex v = chooseNextVertexWithEdge(maximizeCrossings);
-    var bestCoordinate = generateBestCoordinate(v, maximizeCrossings, 1);
+    var bestCoordinate = generateBestCoordinate(v, maximizeCrossings, searchDepth);
 
     return new GameMove(v, bestCoordinate.getCoordinate());
   }
 
   private double evaluateMove(GameMove move, boolean maximizeCrossings, int depth) {
     double crossingNumberChange;
-    if(this.role.equals(Role.MAX_ANGLE)||this.role.equals(Role.MIN_ANGLE)){
+    if (this.role.equals(Role.MAX_ANGLE) || this.role.equals(Role.MIN_ANGLE)) {
       crossingNumberChange = calculateCrossingAngles(move);
-      System.out.println("Angles used");
     } else {
       crossingNumberChange = calculateNewEdgeCrossings(move);
       System.out.println("Crossings used");
@@ -327,14 +328,14 @@ public class RecursiveSearchPlayer implements NewPlayer {
           if (!e1.isAdjacent(e2)) {
 
             if (!vertexCoordinates.containsKey(e1.getS()) || !vertexCoordinates.containsKey(e1.getT())
-                    || !vertexCoordinates.containsKey(e2.getS())
-                    || !vertexCoordinates.containsKey(e2.getT())) {
+                || !vertexCoordinates.containsKey(e2.getS())
+                || !vertexCoordinates.containsKey(e2.getT())) {
               continue;
             }
             Segment s1 = new Segment(vertexCoordinates.get(e1.getS()), vertexCoordinates.get(e1.getT()));
             Segment s2 = new Segment(vertexCoordinates.get(e2.getS()), vertexCoordinates.get(e2.getT()));
             if (Segment.intersect(s1, s2)) {
-              result+= Segment.squaredCosineOfAngle(s1,s2);
+              result += Segment.squaredCosineOfAngle(s1, s2);
             }
           }
         }
