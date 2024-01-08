@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.Algorithms;
+package GraphXings.Gruppe5.Algorithms;
 
 import java.util.HashMap;
 

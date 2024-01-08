@@ -1,11 +1,11 @@
-package GraphXings.Gruppe5Algo.Models;
+package GraphXings.Gruppe5.Models;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 import GraphXings.Data.Coordinate;
-import GraphXings.Gruppe5Algo.Utils.WeightedNumberGenerator;
+import GraphXings.Gruppe5.Utils.WeightedNumberGenerator;
 
 public class HeatMap {
 

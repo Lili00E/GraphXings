@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.PointStrategies;
+package GraphXings.Gruppe5.PointStrategies;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -7,7 +7,7 @@ import java.util.Random;
 import GraphXings.Data.Coordinate;
 import GraphXings.Data.Vertex;
 import GraphXings.Game.GameState;
-import GraphXings.Gruppe5Algo.Models.HeatMap;
+import GraphXings.Gruppe5.Models.HeatMap;
 
 public class HeatMapChoiceStrategy implements PointChoiceStrategy {
 

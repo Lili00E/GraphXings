@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.Utils;
+package GraphXings.Gruppe5.Utils;
 
 import java.util.HashSet;
 import java.util.Random;

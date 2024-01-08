@@ -1,13 +1,13 @@
-package GraphXings.Gruppe5Algo.Models;
+package GraphXings.Gruppe5.Models;
 
 import GraphXings.Data.Coordinate;
 
 public class ScoredCoordinate {
 
-  public final int score;
+  public final double score;
   public final Coordinate coordinate;
 
-  public Integer getScore() {
+  public double getScore() {
     return score;
   }
 
@@ -15,7 +15,7 @@ public class ScoredCoordinate {
     return coordinate;
   }
 
-  public ScoredCoordinate(int score, Coordinate coordinate) {
+  public ScoredCoordinate(double score, Coordinate coordinate) {
     this.score = score;
     this.coordinate = coordinate;
   }

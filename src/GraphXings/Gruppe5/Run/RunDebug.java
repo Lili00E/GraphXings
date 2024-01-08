@@ -1,17 +1,16 @@
-package GraphXings.Gruppe5Algo.Run;
+package GraphXings.Gruppe5.Run;
 
 import GraphXings.Algorithms.NewPlayer;
 
+import GraphXings.Game.GameInstance.PlanarGameInstanceFactory;
 import GraphXings.Game.NewGame;
 import GraphXings.Game.NewGameResult;
-import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
-import GraphXings.Gruppe5Algo.Players.PointChoicePlayer;
-import GraphXings.Gruppe5Algo.Players.RecursiveSearchPlayer;
-import GraphXings.Gruppe5Algo.PointStrategies.HeatMapChoiceStrategy;
-import GraphXings.Gruppe5Algo.PointStrategies.RandomPointChoiceStrategy;
-import GraphXings.Gruppe5Algo.Utils.ProgressBar;
-import GraphXings.Gruppe5Algo.Utils.SpecificRandomCycleFactory;
-import GraphXings.Gruppe5Algo.Utils.VsBar;
+import GraphXings.Gruppe5.Models.HeatMapFileReader;
+import GraphXings.Gruppe5.Players.PointChoicePlayer;
+import GraphXings.Gruppe5.Players.RecursiveSearchPlayer;
+import GraphXings.Gruppe5.PointStrategies.RandomPointChoiceStrategy;
+import GraphXings.Gruppe5.Utils.SpecificRandomCycleFactory;
+import GraphXings.Gruppe5.Utils.VsBar;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -28,8 +27,11 @@ public class RunDebug {
     int width = 1000;
     int height = 1000;
     var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
+    long seed = 27081883;
+    PlanarGameInstanceFactory factory = new PlanarGameInstanceFactory(seed);
 
-    var gameInstance = randomFactory.getGameInstance();
+
+    var gameInstance = factory.getGameInstance();
 
     System.out.println("Generated game with " + gameInstance.getG().getN() + "x" + gameInstance.getWidth() + "x"
         + gameInstance.getHeight());
@@ -43,11 +45,11 @@ public class RunDebug {
       // var maxHeatMap = new HeatMapFileReader()
       // .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
       var minHeatMap = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
+          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/UniformHeatMap.txt");
       var smallHeatMapMin = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
       var smallHeatMapMax = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
       // var myPlayer = new PointChoicePlayer("My Player: Min as Min", new
       // HeatMapChoiceStrategy(minHeatMap),
@@ -56,14 +58,16 @@ public class RunDebug {
       // HeatMapChoiceStrategy(smallHeatMapMax),
       // new HeatMapChoiceStrategy(smallHeatMapMin), 2000);
       var myPlayer = new RecursiveSearchPlayer("My Player: Recursive Search", 5, 100, 100, 20000);
+//      var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
+//              new HeatMapChoiceStrategy(smallHeatMapMax), 2000);
       var competitors = new ArrayList<NewPlayer>() {
         {
 
           add(new PointChoicePlayer("RC 150", new RandomPointChoiceStrategy(150),
               new RandomPointChoiceStrategy(20),
               2000));
-          add(new PointChoicePlayer("My Player: only Max", new HeatMapChoiceStrategy(smallHeatMapMin),
-              new HeatMapChoiceStrategy(smallHeatMapMax), 2000));
+//          add(new PointChoicePlayer("My Player: only Max", new HeatMapChoiceStrategy(smallHeatMapMin),
+//              new HeatMapChoiceStrategy(smallHeatMapMax), 2000));
           // add(new GridPlayer("Group 10"));
           // add(new NewBetterFasterPlayer("Better Faster Player"));
 
@@ -84,7 +88,7 @@ public class RunDebug {
         System.out.println("Starting matchup " + player1.getName() + " vs. " + player2.getName());
         for (int i = 0; i < numGames; i++) {
           NewGame game = new NewGame(gameInstance.getG(), gameInstance.getHeight(), gameInstance.getWidth(),
-              player1, player2);
+              player1, player2, NewGame.Objective.CROSSING_ANGLE, 300000000000L);
           NewGameResult res = game.play();
 
           progressBar.printProgressDiscrete(winners.get(player1.getName()), winners.get(player2.getName()), numGames);

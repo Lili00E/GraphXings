@@ -1,12 +1,11 @@
 
-package GraphXings.Gruppe5Algo.Players;
+package GraphXings.Gruppe5.Players;
 
 import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Data.*;
 import GraphXings.Game.GameMove;
 import GraphXings.Game.GameState;
-import GraphXings.Gruppe5Algo.Models.ScoredCoordinate;
-import GraphXings.Gruppe5Algo.PointStrategies.PointChoiceStrategy;
+import GraphXings.Gruppe5.Models.ScoredCoordinate;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -22,6 +21,8 @@ public class RecursiveSearchPlayer implements NewPlayer {
 
   private int width;
   private int height;
+
+  private Role role;
 
   private int numberOfNodes;
   private int maxGridSize;
@@ -51,12 +52,12 @@ public class RecursiveSearchPlayer implements NewPlayer {
     this.width = width;
     this.height = height;
     this.gs = new GameState(g, width, height);
+    this.role = role;
   }
 
   @Override
   public GameMove maximizeCrossings(GameMove lastMove) {
     return moveWithTimeout(lastMove, true);
-
   }
 
   @Override
@@ -68,12 +69,12 @@ public class RecursiveSearchPlayer implements NewPlayer {
 
   @Override
   public GameMove maximizeCrossingAngles(GameMove lastMove) {
-    return null;
+    return moveWithTimeout(lastMove, true);
   }
 
   @Override
   public GameMove minimizeCrossingAngles(GameMove lastMove) {
-    return null;
+    return moveWithTimeout(lastMove, false);
   }
 
   private GameMove getRandomGameMove() {
@@ -225,8 +226,15 @@ public class RecursiveSearchPlayer implements NewPlayer {
     return new GameMove(v, bestCoordinate.getCoordinate());
   }
 
-  private int evaluateMove(GameMove move, boolean maximizeCrossings, int depth) {
-    int crossingNumberChange = calculateNewEdgeCrossings(move);
+  private double evaluateMove(GameMove move, boolean maximizeCrossings, int depth) {
+    double crossingNumberChange;
+    if(this.role.equals(Role.MAX_ANGLE)||this.role.equals(Role.MIN_ANGLE)){
+      crossingNumberChange = calculateCrossingAngles(move);
+      System.out.println("Angles used");
+    } else {
+      crossingNumberChange = calculateNewEdgeCrossings(move);
+      System.out.println("Crossings used");
+    }
     if (depth == 0 || this.gs.getPlacedVertices().size() == this.g.getN()) {
       return crossingNumberChange;
     }
@@ -303,6 +311,37 @@ public class RecursiveSearchPlayer implements NewPlayer {
     }
     undoMove(newMove);
     return crossingNumber;
+  }
+
+  private double calculateCrossingAngles(GameMove newMove) {
+
+    applyMove(newMove);
+    double result = 0;
+    var adjacentEdges = g.getIncidentEdges(newMove.getVertex());
+    var vertexCoordinates = this.gs.getVertexCoordinates();
+
+    for (Edge e1 : adjacentEdges) {
+      for (Edge e2 : g.getEdges()) {
+
+        if (!e1.equals(e2)) {
+          if (!e1.isAdjacent(e2)) {
+
+            if (!vertexCoordinates.containsKey(e1.getS()) || !vertexCoordinates.containsKey(e1.getT())
+                    || !vertexCoordinates.containsKey(e2.getS())
+                    || !vertexCoordinates.containsKey(e2.getT())) {
+              continue;
+            }
+            Segment s1 = new Segment(vertexCoordinates.get(e1.getS()), vertexCoordinates.get(e1.getT()));
+            Segment s2 = new Segment(vertexCoordinates.get(e2.getS()), vertexCoordinates.get(e2.getT()));
+            if (Segment.intersect(s1, s2)) {
+              result+= Segment.squaredCosineOfAngle(s1,s2);
+            }
+          }
+        }
+      }
+    }
+    undoMove(newMove);
+    return result;
   }
 
 }

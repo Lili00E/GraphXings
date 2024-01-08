@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.PointStrategies;
+package GraphXings.Gruppe5.PointStrategies;
 
 import java.util.ArrayList;
 

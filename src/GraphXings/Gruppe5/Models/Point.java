@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.Models;
+package GraphXings.Gruppe5.Models;
 
 public class Point {
 

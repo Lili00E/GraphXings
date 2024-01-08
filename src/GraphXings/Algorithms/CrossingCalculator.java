@@ -63,7 +63,7 @@ public class CrossingCalculator
 
     /**
      * Computes the sum of the squared cosines of crossing angles. The implementation is not efficient and iterates over all pairs of edges resulting in quadratic time.
-     * @return The  sum of the squared cosines of crossing angles.
+     * @return The sum of the squared cosines of crossing angles.
      */
     public double computeSumOfSquaredCosinesOfCrossingAngles()
     {

@@ -1,10 +1,10 @@
-package GraphXings.Gruppe5Algo.Players;
+package GraphXings.Gruppe5.Players;
 
 import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Data.*;
 import GraphXings.Game.GameMove;
 import GraphXings.Game.GameState;
-import GraphXings.Gruppe5Algo.PointStrategies.PointChoiceStrategy;
+import GraphXings.Gruppe5.PointStrategies.PointChoiceStrategy;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -20,6 +20,7 @@ public class PointChoicePlayer implements NewPlayer {
 
     private int width;
     private int height;
+    private Role role;
 
     private PointChoiceStrategy minPointChoiceStrategy;
     private PointChoiceStrategy maxPointChoiceStrategy;
@@ -27,7 +28,7 @@ public class PointChoicePlayer implements NewPlayer {
     private int maxPoints;
 
     public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy,
-            int timoutMilliseconds) {
+                             int timoutMilliseconds) {
         this.name = name;
         this.maxPointChoiceStrategy = maxStrategy;
         this.minPointChoiceStrategy = minStrategy;
@@ -49,6 +50,7 @@ public class PointChoicePlayer implements NewPlayer {
         if (this.maxPoints == 0) {
             this.maxPoints = setMaxPoints();
         }
+        this.role = role;
         // if (minPointChoiceStrategy == null){
         //
         // }
@@ -72,24 +74,21 @@ public class PointChoicePlayer implements NewPlayer {
     @Override
     public GameMove maximizeCrossings(GameMove lastMove) {
         return findMoveWithTimeout(lastMove, true);
-
     }
 
     @Override
     public GameMove minimizeCrossings(GameMove lastMove) {
-
         return findMoveWithTimeout(lastMove, false);
-
     }
 
     @Override
     public GameMove maximizeCrossingAngles(GameMove lastMove) {
-        return null;
+        return findMoveWithTimeout(lastMove, true);
     }
 
     @Override
     public GameMove minimizeCrossingAngles(GameMove lastMove) {
-        return null;
+        return findMoveWithTimeout(lastMove, false);
     }
 
     private GameMove getRandomGameMove() {
@@ -123,14 +122,14 @@ public class PointChoicePlayer implements NewPlayer {
 
         ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-        // Your task to be executed
+        // Task to be executed
         Callable<GameMove> task = () -> {
             GameMove betterMove = findMove(maximizeCrossings);
             gs.applyMove(betterMove);
             return betterMove;
         };
 
-        // Submit the task to the executor
+        // Submit task to the executor
         Future<GameMove> future = executorService.submit(task);
         GameMove move = null;
         try {
@@ -184,7 +183,7 @@ public class PointChoicePlayer implements NewPlayer {
             return new GameMove(v, c);
         } else {
             var randomCoords = minPointChoiceStrategy.getCoordinatesToTry(width, height,
-                    maxPoints, this.gs );
+                    maxPoints, this.gs);
             var c = getWorstOfPlacement(randomCoords, v);
             return new GameMove(v, c);
         }
@@ -194,13 +193,17 @@ public class PointChoicePlayer implements NewPlayer {
     private Coordinate getBestOfPlacement(ArrayList<Coordinate> possibleCoordinates, Vertex vertexToBePlaced) {
 
         Coordinate coordinateWithMaxCross = possibleCoordinates.get(0);
-        int max = 0;
+        double max = 0;
 
         for (Coordinate c : possibleCoordinates) {
 
             var move = new GameMove(vertexToBePlaced, c);
-
-            int currentCrossingNum = calculateNewEdgeCrossings(move);
+            double currentCrossingNum;
+            if (this.role.equals(Role.MAX_ANGLE) || this.role.equals(Role.MIN_ANGLE)) {
+                currentCrossingNum = calculateCrossingAngles(move);
+            } else {
+                currentCrossingNum = calculateNewEdgeCrossings(move);
+            }
 
             if (currentCrossingNum >= max) {
                 max = currentCrossingNum;
@@ -211,16 +214,21 @@ public class PointChoicePlayer implements NewPlayer {
     }
 
     private Coordinate getWorstOfPlacement(ArrayList<Coordinate> possibleCoordinates,
-            Vertex vertexToBePlaced) {
+                                           Vertex vertexToBePlaced) {
 
         Coordinate coordinateWithMinCross = possibleCoordinates.get(0);
-        int min = 1000000000;
+        double min = Double.MAX_VALUE;
 
         for (Coordinate c : possibleCoordinates) {
 
             var move = new GameMove(vertexToBePlaced, c);
+            double currentCrossingNum;
 
-            int currentCrossingNum = calculateNewEdgeCrossings(move);
+            if (this.role.equals(Role.MAX_ANGLE) || this.role.equals(Role.MIN_ANGLE)) {
+                currentCrossingNum = calculateCrossingAngles(move);
+            } else {
+                currentCrossingNum = calculateNewEdgeCrossings(move);
+            }
             if (currentCrossingNum < min) {
                 min = currentCrossingNum;
                 coordinateWithMinCross = c;
@@ -245,10 +253,10 @@ public class PointChoicePlayer implements NewPlayer {
         gs.applyMove(move);
     }
 
-    private int calculateNewEdgeCrossings(GameMove newMove) {
+    private double calculateNewEdgeCrossings(GameMove newMove) {
 
         applyMove(newMove);
-        int crossingNumber = 0;
+        double crossingNumber = 0;
         var adjacentEdges = g.getIncidentEdges(newMove.getVertex());
         var vertexCoordinates = this.gs.getVertexCoordinates();
 
@@ -275,6 +283,37 @@ public class PointChoicePlayer implements NewPlayer {
         }
         undoMove(newMove);
         return crossingNumber;
+    }
+
+    private double calculateCrossingAngles(GameMove newMove) {
+
+        applyMove(newMove);
+        double result = 0;
+        var adjacentEdges = g.getIncidentEdges(newMove.getVertex());
+        var vertexCoordinates = this.gs.getVertexCoordinates();
+
+        for (Edge e1 : adjacentEdges) {
+            for (Edge e2 : g.getEdges()) {
+
+                if (!e1.equals(e2)) {
+                    if (!e1.isAdjacent(e2)) {
+
+                        if (!vertexCoordinates.containsKey(e1.getS()) || !vertexCoordinates.containsKey(e1.getT())
+                                || !vertexCoordinates.containsKey(e2.getS())
+                                || !vertexCoordinates.containsKey(e2.getT())) {
+                            continue;
+                        }
+                        Segment s1 = new Segment(vertexCoordinates.get(e1.getS()), vertexCoordinates.get(e1.getT()));
+                        Segment s2 = new Segment(vertexCoordinates.get(e2.getS()), vertexCoordinates.get(e2.getT()));
+                        if (Segment.intersect(s1, s2)) {
+                            result += Segment.squaredCosineOfAngle(s1, s2);
+                        }
+                    }
+                }
+            }
+        }
+        undoMove(newMove);
+        return result;
     }
 
 }

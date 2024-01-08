@@ -1,4 +1,4 @@
-package GraphXings.Gruppe5Algo.GUI;
+package GraphXings.Gruppe5.GUI;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -11,7 +11,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import javax.swing.JComponent;
@@ -19,14 +18,12 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
 import GraphXings.Data.Segment;
 import GraphXings.Data.Vertex;
 import GraphXings.Game.GameMove;
 import GraphXings.Game.GameState;
-import GraphXings.Gruppe5Algo.Algorithms.BasicCrossingCalculatorAlgorithm;
-import GraphXings.Gruppe5Algo.Utils.RationalComputer;
+import GraphXings.Gruppe5.Utils.RationalComputer;
 
 public class GuiGameDisplay extends JFrame {
 

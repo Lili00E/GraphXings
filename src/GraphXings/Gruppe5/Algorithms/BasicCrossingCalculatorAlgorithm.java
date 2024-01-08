@@ -1,8 +1,8 @@
-package GraphXings.Gruppe5Algo.Algorithms;
+package GraphXings.Gruppe5.Algorithms;
 
 import GraphXings.Data.*;
-import GraphXings.Gruppe5Algo.Models.Point;
-import GraphXings.Gruppe5Algo.Utils.RationalComputer;
+import GraphXings.Gruppe5.Models.Point;
+import GraphXings.Gruppe5.Utils.RationalComputer;
 
 import java.util.ArrayList;
 import java.util.HashMap;

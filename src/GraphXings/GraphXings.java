@@ -8,28 +8,33 @@ import GraphXings.Algorithms.NewRandomPlayer;
 import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
 import GraphXings.Data.Vertex;
-import GraphXings.Game.GameInstance.ConstantGameInstanceFactory;
 import GraphXings.Game.GameInstance.GameInstanceFactory;
 import GraphXings.Game.GameInstance.PlanarGameInstanceFactory;
-import GraphXings.Game.GameInstance.RandomCycleFactory;
 import GraphXings.Game.League.NewLeague;
 import GraphXings.Game.League.NewLeagueResult;
 import GraphXings.Game.Match.NewMatch;
 import GraphXings.Game.Match.NewMatchResult;
-import GraphXings.Game.NewGame;
-import GraphXings.Game.NewGameResult;
-import GraphXings.Gruppe5Algo.Models.HeatMap;
-import GraphXings.Gruppe5Algo.Models.HeatMapFileReader;
-import GraphXings.Gruppe5Algo.Players.PointChoicePlayer;
-import GraphXings.Gruppe5Algo.PointStrategies.HeatMapChoiceStrategy;
+import GraphXings.Gruppe5.Models.HeatMapFileReader;
+import GraphXings.Gruppe5.Players.PointChoicePlayer;
+import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
+import GraphXings.Gruppe5.PointStrategies.RandomPointChoiceStrategy;
 
 public class GraphXings {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws FileNotFoundException {
+        var smallHeatMapMin = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+        var smallHeatMapMax = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+
         ArrayList<NewPlayer> players = new ArrayList<>();
-        players.add(new NewRandomPlayer("R1"));
-        players.add(new NewRandomPlayer("R2"));
-        players.add(new NewRandomPlayer("R3"));
-        long timeLimit = 300000000000l;
+//        players.add(new NewRandomPlayer("R1"));
+        players.add(new PointChoicePlayer("RC 100", new RandomPointChoiceStrategy(100),
+                new RandomPointChoiceStrategy(20),
+                2000));
+//        players.add(new RecursiveSearchPlayer("My Player: Recursive Search", 5, 100, 100, 20000));
+        players.add(new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
+                new HeatMapChoiceStrategy(smallHeatMapMax), 2000));
+        long timeLimit = 300000000000L;
         long seed = 27081883;
         int bestOf = 1;
         NewMatch.MatchType matchType = NewMatch.MatchType.CROSSING_ANGLE;
