@@ -6,5 +6,5 @@ Erstellung der Heatmap in GraphXings: (Pfad ggf. anpassen)
         var minHeatMap = new HeatMapFileReader()
                 .readFromFile("./src/GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/UniformHeatMap.txt");
 
-        var myPlayer = new PointChoicePlayer("Gruppe5", new HeatMapChoiceStrategy(minHeatMap),
-                new HeatMapChoiceStrategy(smallHeatMapMax), 20000);
+        var myPlayer = new PointChoicePlayer("Gruppe 5", new HeatMapChoiceStrategy(minHeatMap),
+                new HeatMapChoiceStrategy(smallHeatMapMax));

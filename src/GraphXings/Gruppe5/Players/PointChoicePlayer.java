@@ -6,7 +6,8 @@ import GraphXings.Game.GameMove;
 import GraphXings.Game.GameState;
 import GraphXings.Gruppe5.PointStrategies.PointChoiceStrategy;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Random;
 import java.util.concurrent.*;
 
 public class PointChoicePlayer implements NewPlayer {
@@ -27,12 +28,13 @@ public class PointChoicePlayer implements NewPlayer {
 
   private int maxPoints;
 
-  public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy,
-      int timoutMilliseconds) {
+  private GameMove ourNewGameMove;
+
+  public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy) {
     this.name = name;
     this.maxPointChoiceStrategy = maxStrategy;
     this.minPointChoiceStrategy = minStrategy;
-    this.timoutMilliseconds = timoutMilliseconds;
+    this.timoutMilliseconds = 20000;
     this.maxPoints = 0;
   }
 
@@ -51,9 +53,7 @@ public class PointChoicePlayer implements NewPlayer {
       this.maxPoints = setMaxPoints();
     }
     this.role = role;
-    // if (minPointChoiceStrategy == null){
-    //
-    // }
+    this.ourNewGameMove = getRandomGameMove();
   }
 
   private int setMaxPoints() {
@@ -73,22 +73,26 @@ public class PointChoicePlayer implements NewPlayer {
 
   @Override
   public GameMove maximizeCrossings(GameMove lastMove) {
-    return findMoveWithTimeout(lastMove, true);
+    findMoveWithTimeout(lastMove, true);
+    return this.ourNewGameMove;
   }
 
   @Override
   public GameMove minimizeCrossings(GameMove lastMove) {
-    return findMoveWithTimeout(lastMove, false);
+    findMoveWithTimeout(lastMove, false);
+    return this.ourNewGameMove;
   }
 
   @Override
   public GameMove maximizeCrossingAngles(GameMove lastMove) {
-    return findMoveWithTimeout(lastMove, true);
+    findMoveWithTimeout(lastMove, true);
+    return this.ourNewGameMove;
   }
 
   @Override
   public GameMove minimizeCrossingAngles(GameMove lastMove) {
-    return findMoveWithTimeout(lastMove, false);
+    findMoveWithTimeout(lastMove, false);
+    return this.ourNewGameMove;
   }
 
   private GameMove getRandomGameMove() {
@@ -118,7 +122,7 @@ public class PointChoicePlayer implements NewPlayer {
     return new GameMove(v, c);
   }
 
-  public GameMove findMoveWithTimeout(GameMove lastMove, boolean maximizeCrossings) {
+  public void findMoveWithTimeout(GameMove lastMove, boolean maximizeCrossings) {
 
     if (lastMove != null) {
       gs.applyMove(lastMove);
@@ -128,24 +132,22 @@ public class PointChoicePlayer implements NewPlayer {
 
     // Task to be executed
     Callable<GameMove> task = () -> {
-      GameMove betterMove = findMove(maximizeCrossings);
-      gs.applyMove(betterMove);
-      return betterMove;
+      findMove(maximizeCrossings);
+      gs.applyMove(this.ourNewGameMove);
+      return this.ourNewGameMove;
     };
 
     // Submit task to the executor
     Future<GameMove> future = executorService.submit(task);
-    GameMove move = null;
     try {
-      move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+      future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
     } catch (TimeoutException e) {
-      move = getRandomGameMove();
+      System.out.println("Timeout prevented");
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace(); // Handle other exceptions
     } finally {
       executorService.shutdown();
     }
-    return move;
 
   }
 
@@ -182,7 +184,7 @@ public class PointChoicePlayer implements NewPlayer {
     return alternativeVertex;
   }
 
-  private GameMove findMove(boolean maximizeCrossings) {
+  private void findMove(boolean maximizeCrossings) {
 
     Vertex v = chooseNextVertexWithEdge(maximizeCrossings);
 
@@ -190,12 +192,12 @@ public class PointChoicePlayer implements NewPlayer {
       var randomCoords = maxPointChoiceStrategy.getCoordinatesToTry(width, height,
           maxPoints, this.gs);
       var c = getBestOfPlacement(randomCoords, v);
-      return new GameMove(v, c);
+      this.ourNewGameMove = new GameMove(v, c);
     } else {
       var randomCoords = minPointChoiceStrategy.getCoordinatesToTry(width, height,
           maxPoints, this.gs);
       var c = getWorstOfPlacement(randomCoords, v);
-      return new GameMove(v, c);
+      this.ourNewGameMove = new GameMove(v, c);
     }
 
   }
@@ -218,6 +220,7 @@ public class PointChoicePlayer implements NewPlayer {
       if (currentCrossingNum >= max) {
         max = currentCrossingNum;
         coordinateWithMaxCross = c;
+        this.ourNewGameMove = move;
       }
     }
     return coordinateWithMaxCross;
@@ -242,6 +245,7 @@ public class PointChoicePlayer implements NewPlayer {
       if (currentCrossingNum < min) {
         min = currentCrossingNum;
         coordinateWithMinCross = c;
+        this.ourNewGameMove = move;
       }
     }
 

@@ -2,10 +2,8 @@ package GraphXings;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Random;
 
 import GraphXings.Algorithms.NewPlayer;
-import GraphXings.Algorithms.NewRandomPlayer;
 import GraphXings.Data.Edge;
 import GraphXings.Data.Graph;
 import GraphXings.Data.Vertex;
@@ -17,10 +15,7 @@ import GraphXings.Game.Match.NewMatch;
 import GraphXings.Game.Match.NewMatchResult;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
-import GraphXings.Gruppe5.Players.PointChoicePlayerNewTimeout;
-import GraphXings.Gruppe5.Players.RecursiveSearchPlayer;
 import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
-import GraphXings.Gruppe5.PointStrategies.RandomPointChoiceStrategy;
 import GraphXings.Gruppe8.EfficientWinningPlayer;
 
 public class GraphXings {
@@ -32,18 +27,18 @@ public class GraphXings {
 
         ArrayList<NewPlayer> players = new ArrayList<>();
 //        players.add(new NewRandomPlayer("R1"));
-//        players.add(new PointChoicePlayer("RC 100", new RandomPointChoiceStrategy(100),
+//        players.add(new PointChoicePlayerOldTimeout("RC 100", new RandomPointChoiceStrategy(100),
 //                new RandomPointChoiceStrategy(100),
 //                2000));
 //        players.add(new RecursiveSearchPlayer("My Player: Recursive Search", 5, 100, 100, 20000));
-//        players.add(new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
+//        players.add(new PointChoicePlayerOldTimeout("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
 //                new HeatMapChoiceStrategy(smallHeatMapMax), 20000));
 //        players.add(new GraphXings.Gruppe8.EfficientWinningPlayer("Gruppe 8"));
 
-//        players.add(new PointChoicePlayer("My Player: Old Timeout", new HeatMapChoiceStrategy(smallHeatMapMin),
-//                new HeatMapChoiceStrategy(smallHeatMapMax), 20000));
-        players.add(new PointChoicePlayerNewTimeout("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
-                new HeatMapChoiceStrategy(smallHeatMapMax), 20000));
+//        players.add(new PointChoicePlayerOldTimeout("My Player: Old Timeout", new HeatMapChoiceStrategy(smallHeatMapMin),
+//                new HeatMapChoiceStrategy(smallHeatMapMax)));
+        players.add(new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
+                new HeatMapChoiceStrategy(smallHeatMapMax)));
         players.add(new EfficientWinningPlayer("Gruppe 8"));
 //        players.add(new RecursiveSearchPlayer("Recursive Search", 5, 100, 100, 20000));
         long timeLimit = 300000000000l;
@@ -74,7 +69,7 @@ public class GraphXings {
 //
 //        }
 //
-//        var myPlayer = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(minHeatMap),
+//        var myPlayer = new PointChoicePlayerOldTimeout("My Player", new HeatMapChoiceStrategy(minHeatMap),
 //                new HeatMapChoiceStrategy(maxHeatMap), 2000);
 //        NewPlayer player1 = myPlayer;
 //        NewPlayer player2 = new NewRandomPlayer("Random Player");
