@@ -2,6 +2,7 @@ package GraphXings;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import GraphXings.Algorithms.NewPlayer;
 import GraphXings.Algorithms.NewRandomPlayer;
@@ -16,8 +17,11 @@ import GraphXings.Game.Match.NewMatch;
 import GraphXings.Game.Match.NewMatchResult;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
+import GraphXings.Gruppe5.Players.PointChoicePlayerNewTimeout;
+import GraphXings.Gruppe5.Players.RecursiveSearchPlayer;
 import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
 import GraphXings.Gruppe5.PointStrategies.RandomPointChoiceStrategy;
+import GraphXings.Gruppe8.EfficientWinningPlayer;
 
 public class GraphXings {
     public static void main(String[] args) throws FileNotFoundException {
@@ -28,15 +32,23 @@ public class GraphXings {
 
         ArrayList<NewPlayer> players = new ArrayList<>();
 //        players.add(new NewRandomPlayer("R1"));
-        players.add(new PointChoicePlayer("RC 100", new RandomPointChoiceStrategy(100),
-                new RandomPointChoiceStrategy(20),
-                2000));
+//        players.add(new PointChoicePlayer("RC 100", new RandomPointChoiceStrategy(100),
+//                new RandomPointChoiceStrategy(100),
+//                2000));
 //        players.add(new RecursiveSearchPlayer("My Player: Recursive Search", 5, 100, 100, 20000));
-        players.add(new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
-                new HeatMapChoiceStrategy(smallHeatMapMax), 2000));
-        long timeLimit = 300000000000L;
-        long seed = 27081883;
-        int bestOf = 1;
+//        players.add(new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
+//                new HeatMapChoiceStrategy(smallHeatMapMax), 20000));
+//        players.add(new GraphXings.Gruppe8.EfficientWinningPlayer("Gruppe 8"));
+
+//        players.add(new PointChoicePlayer("My Player: Old Timeout", new HeatMapChoiceStrategy(smallHeatMapMin),
+//                new HeatMapChoiceStrategy(smallHeatMapMax), 20000));
+        players.add(new PointChoicePlayerNewTimeout("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
+                new HeatMapChoiceStrategy(smallHeatMapMax), 20000));
+        players.add(new EfficientWinningPlayer("Gruppe 8"));
+//        players.add(new RecursiveSearchPlayer("Recursive Search", 5, 100, 100, 20000));
+        long timeLimit = 300000000000l;
+        long seed = 23071983;
+        int bestOf = 3;
         NewMatch.MatchType matchType = NewMatch.MatchType.CROSSING_ANGLE;
         PlanarGameInstanceFactory factory = new PlanarGameInstanceFactory(seed);
         runLeague(players,bestOf,timeLimit,factory,matchType,seed);
