@@ -68,20 +68,33 @@ public class GameState {
    */
   public boolean checkMoveValidity(GameMove newMove) {
     if (newMove.getVertex() == null || newMove.getCoordinate() == null) {
+      System.out.println("VERTEX, COORD NULL");
       return false;
     }
     if (!vertices.contains(newMove.getVertex())) {
+      System.out.println("VERTEX NOT FOUND");
       return false;
     }
     if (placedVertices.contains(newMove.getVertex())) {
+      System.out.println(placedVertices.size());
+      System.out.println(vertices.size());
+      for (var vertex : getPlacedVertices()) {
+        System.out.print(vertex.getId() + ", ");
+      }
+      System.out.println();
+      System.out.println("REPLAYED MOVE" + newMove.getVertex().getId());
       return false;
     }
     int x = newMove.getCoordinate().getX();
     int y = newMove.getCoordinate().getY();
     if (x >= width || y >= height) {
+
+      System.out.println("OUT OF BOUNDS");
       return false;
     }
     if (usedCoordinates[x][y] != 0) {
+
+      System.out.println("USED COORD");
       return false;
     }
     return true;

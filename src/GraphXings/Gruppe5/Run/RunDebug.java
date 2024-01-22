@@ -46,9 +46,10 @@ public class RunDebug {
       // var minHeatMap = new HeatMapFileReader()
       // .readFromFile(".//Gruppe5/PointStrategies/HeatMaps/UniformHeatMap.txt");
       var smallHeatMapMin = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+          .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+
       var smallHeatMapMax = new HeatMapFileReader()
-          .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+          .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
       // var myPlayer = new PointChoicePlayerOldTimeout("My Player: Min as Min", new
       // HeatMapChoiceStrategy(minHeatMap),
