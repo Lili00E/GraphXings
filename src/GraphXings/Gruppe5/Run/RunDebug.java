@@ -27,7 +27,7 @@ public class RunDebug {
     int height = 1000;
     var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
     // long seed = new Random().nextLong();
-    long seed = 23071983;
+    long seed = 23071981;
     PlanarGameInstanceFactory factory = new PlanarGameInstanceFactory(seed);
 
     var gameInstance = factory.getGameInstance();
