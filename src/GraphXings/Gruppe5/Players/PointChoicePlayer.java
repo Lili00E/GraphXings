@@ -11,8 +11,6 @@ import java.util.concurrent.*;
 
 public class PointChoicePlayer implements NewPlayer {
 
-  private final int timoutMilliseconds;
-
   private String name;
 
   private Graph g;
@@ -27,12 +25,10 @@ public class PointChoicePlayer implements NewPlayer {
 
   private int maxPoints;
 
-  public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy,
-      int timoutMilliseconds) {
+  public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy) {
     this.name = name;
     this.maxPointChoiceStrategy = maxStrategy;
     this.minPointChoiceStrategy = minStrategy;
-    this.timoutMilliseconds = timoutMilliseconds;
     this.maxPoints = 0;
   }
 
@@ -119,7 +115,6 @@ public class PointChoicePlayer implements NewPlayer {
   }
 
   public GameMove findMoveWithTimeout(GameMove lastMove, boolean maximizeCrossings) {
-
     if (lastMove != null) {
       gs.applyMove(lastMove);
     }
@@ -137,7 +132,9 @@ public class PointChoicePlayer implements NewPlayer {
     Future<GameMove> future = executorService.submit(task);
     GameMove move = null;
     try {
-      move = future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
+      final var maxTimeoutMs = 240_000; // 4 min per game
+      var calculatedTimout = maxTimeoutMs / g.getN() / 2; // calculate the amount of time left
+      move = future.get(calculatedTimout, TimeUnit.MILLISECONDS); // 2 seconds timeout
     } catch (TimeoutException e) {
       move = getRandomGameMove();
     } catch (InterruptedException | ExecutionException e) {

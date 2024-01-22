@@ -15,6 +15,7 @@ import GraphXings.Game.GameInstance.PlanarGameInstanceFactory;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
 import GraphXings.Gruppe5.Players.RecursiveSearchPlayer;
+import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
 import GraphXings.Gruppe5.PointStrategies.RandomPointChoiceStrategy;
 import GraphXings.Gruppe5.Utils.SpecificRandomCycleFactory;
 import GraphXings.Gruppe5.Utils.VsBar;
@@ -22,12 +23,12 @@ import GraphXings.Gruppe5.Utils.VsBar;
 public class RunDebug {
   public static void main(String[] args) {
 
-    int numGames = 10;
-    int numNodes = 50;
+    int numGames = 1;
+    int numNodes = 20;
     int width = 1000;
     int height = 1000;
     var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
-    long seed = 27081883;
+    long seed = 2;
     PlanarGameInstanceFactory factory = new PlanarGameInstanceFactory(seed);
 
     var gameInstance = factory.getGameInstance();
@@ -45,20 +46,22 @@ public class RunDebug {
       // .readFromFile("./GraphXings/Gruppe5Algo/PointStrategies/HeatMaps/ManualHeatMap.txt");
       // var minHeatMap = new HeatMapFileReader()
       // .readFromFile(".//Gruppe5/PointStrategies/HeatMaps/UniformHeatMap.txt");
-      // var smallHeatMapMin = new HeatMapFileReader()
-      // .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+      var smallHeatMapMin = new HeatMapFileReader()
+          .readFromFile(
+              "/Users/lilieven/Documents/Master/Netzwerkalgorithmen/GraphXings/src/GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
       var smallHeatMapMax = new HeatMapFileReader()
-          .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+          .readFromFile(
+              "/Users/lilieven/Documents/Master/Netzwerkalgorithmen/GraphXings/src/GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
 
       // var myPlayer = new PointChoicePlayer("My Player: Min as Min", new
       // HeatMapChoiceStrategy(minHeatMap),
       // new HeatMapChoiceStrategy(maxHeatMap), 2000);
-      // var myPlayer = new PointChoicePlayer("My Player: Max as Min", new
-      // HeatMapChoiceStrategy(smallHeatMapMax),
-      // new HeatMapChoiceStrategy(smallHeatMapMin), 2000);
+      var myPlayer = new PointChoicePlayer("My Player: Max as Min", new HeatMapChoiceStrategy(smallHeatMapMax),
+          new HeatMapChoiceStrategy(smallHeatMapMin));
       // var myPlayer = new RecursiveSearchPlayer("My Player: Recursive Search", 0,
       // 10, 10, 20000);
-      var myPlayer = new RecursiveSearchPlayer("RS Player", 0, 10, 10, 200);
+      // var myPlayer = new RecursiveSearchPlayer("RS Player", 0, 10, 10, 20000);
+
       // var myPlayer = new
       // PointChoicePlayer("My Player", new
       // HeatMapChoiceStrategy(smallHeatMapMin),
