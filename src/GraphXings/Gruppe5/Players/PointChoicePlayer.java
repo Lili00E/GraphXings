@@ -28,6 +28,8 @@ public class PointChoicePlayer implements NewPlayer {
 
   private GameMove ourNewGameMove;
 
+  private long startTime;
+
   public PointChoicePlayer(String name, PointChoiceStrategy minStrategy, PointChoiceStrategy maxStrategy) {
     this.name = name;
     this.maxPointChoiceStrategy = maxStrategy;
@@ -42,7 +44,7 @@ public class PointChoicePlayer implements NewPlayer {
 
   @Override
   public void initializeNextRound(Graph g, int width, int height, Role role) {
-
+    this.startTime = System.currentTimeMillis();
     this.g = g;
     this.width = width;
     this.height = height;
@@ -138,8 +140,12 @@ public class PointChoicePlayer implements NewPlayer {
     // Submit task to the executor
     Future<GameMove> future = executorService.submit(task);
     try {
-      final var maxTimeoutMs = 240000;
-      var calculatedTimeout = maxTimeoutMs / (g.getN() / 2);
+      // final var maxTimeoutMs = 240000;
+      long maxTimeoutMs = 240_000; // 4 min per game
+      long elapsedTime = 0;
+      long calculatedTimeout;
+      elapsedTime = System.currentTimeMillis() - startTime;
+      calculatedTimeout = (maxTimeoutMs - elapsedTime) / g.getN() / 2;
       future.get(calculatedTimeout, TimeUnit.MILLISECONDS); // 2 seconds timeout
     } catch (TimeoutException ignored) {
     } catch (InterruptedException | ExecutionException e) {
