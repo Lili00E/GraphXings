@@ -12,8 +12,6 @@ import java.util.concurrent.*;
 
 public class PointChoicePlayer implements NewPlayer {
 
-  private final int timoutMilliseconds;
-
   private String name;
 
   private Graph g;
@@ -34,7 +32,6 @@ public class PointChoicePlayer implements NewPlayer {
     this.name = name;
     this.maxPointChoiceStrategy = maxStrategy;
     this.minPointChoiceStrategy = minStrategy;
-    this.timoutMilliseconds = 20000;
     this.maxPoints = 0;
   }
 
@@ -45,6 +42,7 @@ public class PointChoicePlayer implements NewPlayer {
 
   @Override
   public void initializeNextRound(Graph g, int width, int height, Role role) {
+
     this.g = g;
     this.width = width;
     this.height = height;
@@ -140,9 +138,10 @@ public class PointChoicePlayer implements NewPlayer {
     // Submit task to the executor
     Future<GameMove> future = executorService.submit(task);
     try {
-      future.get(timoutMilliseconds, TimeUnit.MILLISECONDS); // 2 seconds timeout
-    } catch (TimeoutException e) {
-      System.out.println("Timeout prevented");
+      final var maxTimeoutMs = 240000;
+      var calculatedTimeout = maxTimeoutMs/(g.getN()/2);
+      future.get(calculatedTimeout, TimeUnit.MILLISECONDS); // 2 seconds timeout
+    } catch (TimeoutException ignored) {
     } catch (InterruptedException | ExecutionException e) {
       e.printStackTrace(); // Handle other exceptions
     } finally {
