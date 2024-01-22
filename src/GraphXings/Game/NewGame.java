@@ -188,7 +188,6 @@ public class NewGame {
     while (turn < g.getN()) {
       GameMove newMove;
       if (turn % 2 == 0) {
-        System.out.println(turn);
         long moveStartTime = System.nanoTime();
         try {
           if (objective.equals(Objective.CROSSING_NUMBER)) {

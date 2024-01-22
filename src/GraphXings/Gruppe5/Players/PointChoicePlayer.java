@@ -8,7 +8,6 @@ import GraphXings.Gruppe5.PointStrategies.PointChoiceStrategy;
 
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.concurrent.*;
 
 public class PointChoicePlayer implements NewPlayer {
 
@@ -55,53 +54,40 @@ public class PointChoicePlayer implements NewPlayer {
     }
     this.role = role;
     this.ourNewGameMove = getRandomGameMove();
+    long maxTimeoutMs = 240_000; // 4 min per game
+    timePerMoveMs = maxTimeoutMs / (g.getN() / 2);
   }
 
   private int setMaxPoints() {
     int numNodes = this.g.getN();
-    if (numNodes <= 100) {
-      return 50;
-    } else if (numNodes <= 500) {
-      return 20;
-    } else if (numNodes <= 1000) {
-      return 10;
-    } else if (numNodes <= 7000) {
-      return 5;
-    } else {
-      return 2;
-    }
+    return numNodes;
   }
 
   @Override
   public GameMove maximizeCrossings(GameMove lastMove) {
     findMoveWithTimeout(lastMove, true);
-    System.out.println("ID" + this.ourNewGameMove.getVertex().getId());
     return this.ourNewGameMove;
   }
 
   @Override
   public GameMove minimizeCrossings(GameMove lastMove) {
     findMoveWithTimeout(lastMove, false);
-    System.out.println("ID" + this.ourNewGameMove.getVertex().getId());
     return this.ourNewGameMove;
   }
 
   @Override
   public GameMove maximizeCrossingAngles(GameMove lastMove) {
     findMoveWithTimeout(lastMove, true);
-    System.out.println("ID" + this.ourNewGameMove.getVertex().getId());
     return this.ourNewGameMove;
   }
 
   @Override
   public GameMove minimizeCrossingAngles(GameMove lastMove) {
     findMoveWithTimeout(lastMove, false);
-    System.out.println("ID" + this.ourNewGameMove.getVertex().getId());
     return this.ourNewGameMove;
   }
 
   private GameMove getRandomGameMove() {
-    System.out.println("NEW ROUND");
     Random r = new Random();
     int stillToBePlaced = g.getN() - gs.getPlacedVertices().size();
     if (stillToBePlaced == 0) {
@@ -130,24 +116,14 @@ public class PointChoicePlayer implements NewPlayer {
 
   public void findMoveWithTimeout(GameMove lastMove, boolean maximizeCrossings) {
 
+    startTimeMoveMs = System.currentTimeMillis();
     if (lastMove != null) {
       gs.applyMove(lastMove);
-      System.out.println("APPLY LAST MOVE" + lastMove.getVertex().getId());
     }
     this.ourNewGameMove = null;
 
     // Submit task to the executor
-    long maxTimeoutMs = 240_000; // 4 min per game
-    long elapsedTime = 0;
-    startTimeMoveMs = System.currentTimeMillis();
-    timePerMoveMs = maxTimeoutMs / g.getN() / 2;
-    System.out.println("TIMEOUT" + timePerMoveMs + "ms");
     findMove(maximizeCrossings);
-    if (gs.getPlacedVertices().contains(this.ourNewGameMove.getVertex())) {
-
-      System.out.println("PROBLEM!!");
-    }
-    System.out.println("APPPLY");
     applyMove(this.ourNewGameMove, false);
 
   }
@@ -208,7 +184,6 @@ public class PointChoicePlayer implements NewPlayer {
     for (Coordinate c : possibleCoordinates) {
       long elapsedTime = System.currentTimeMillis() - startTimeMoveMs;
       if (elapsedTime > timePerMoveMs) {
-        System.out.println("TIMEOUT COORD");
         break;
       }
 
@@ -263,14 +238,10 @@ public class PointChoicePlayer implements NewPlayer {
     usedCoordinates[move.getCoordinate().getX()][move.getCoordinate().getY()] = 0;
     placedVertices.remove(move.getVertex());
     vertexCoordinates.remove(move.getVertex());
-    System.out.println("  UNDO " + move.getVertex().getId() + ", (x: " + move.getCoordinate().getX() + ", y:"
-        + move.getCoordinate().getY() + ")\n");
-
   }
 
   private void applyMove(GameMove move, boolean temporary) {
     if (this.tmpMove != null) {
-      System.out.println("FOUND DEAD MOVE" + move.getVertex().getId() + ". REVERTING FIRST!");
       undoMove(this.tmpMove);
       this.tmpMove = null;
     }
@@ -278,15 +249,12 @@ public class PointChoicePlayer implements NewPlayer {
     if (temporary) {
       this.tmpMove = move;
     }
-    System.out.println("  APPLY " + move.getVertex().getId() + ", (x: " + move.getCoordinate().getX() + ", y:"
-        + move.getCoordinate().getY() + ")");
 
   }
 
   private double calculateNewEdgeCrossings(GameMove newMove) {
 
     applyMove(newMove, true);
-    System.out.println("    INSIDE");
     this.tmpMove = newMove;
     double crossingNumber = 0;
     var adjacentEdges = g.getIncidentEdges(newMove.getVertex());
@@ -298,7 +266,6 @@ public class PointChoicePlayer implements NewPlayer {
 
         long elapsedTime = System.currentTimeMillis() - startTimeMoveMs;
         if (elapsedTime > timePerMoveMs) {
-          System.out.println("TIMEOUT ANGLE CROSSING");
           undoMove(newMove);
           this.tmpMove = null;
           return crossingNumber;
@@ -328,7 +295,7 @@ public class PointChoicePlayer implements NewPlayer {
   private double calculateCrossingAngles(GameMove newMove) {
 
     applyMove(newMove, true);
-    System.out.println("    A-INSIDE");
+
     double result = 0;
     var adjacentEdges = g.getIncidentEdges(newMove.getVertex());
     var vertexCoordinates = this.gs.getVertexCoordinates();
@@ -338,7 +305,6 @@ public class PointChoicePlayer implements NewPlayer {
 
         long elapsedTime = System.currentTimeMillis() - startTimeMoveMs;
         if (elapsedTime > timePerMoveMs) {
-          System.out.println("TIMEOUT ANGLE CROSSING");
           undoMove(newMove);
           this.tmpMove = null;
           return result;
