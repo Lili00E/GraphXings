@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "RunDebug",
+      "request": "launch",
+      "mainClass": "GraphXings.Gruppe5.Run.RunDebug",
+      "projectName": "GraphXings_44c64d67"
+    },
+    {
+      "type": "java",
       "name": "GraphXings",
       "request": "launch",
       "mainClass": "GraphXings.GraphXings"
