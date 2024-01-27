@@ -35,12 +35,12 @@ public class RunTest {
 
         // Heatmaps
         var smallHeatMapMin = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/Heatmap_1.txt");
         var smallHeatMapMax = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/Heatmap_2.txt");
 
         // our Players
-        NewPlayer smallHeatmapPlayer = new PointChoicePlayer("SmallHeatmap", new HeatMapChoiceStrategy(smallHeatMapMin),
+        NewPlayer smallHeatmapPlayer = new PointChoicePlayer("Our Player", new HeatMapChoiceStrategy(smallHeatMapMin),
                 new HeatMapChoiceStrategy(smallHeatMapMax));
         ArrayList<NewPlayer> ourPlayers = new ArrayList<>();
         ourPlayers.add(smallHeatmapPlayer);
@@ -83,7 +83,7 @@ public class RunTest {
             System.out.println("###################################################");
             for(NewPlayer ourPlayer : ourPlayers) {
                 players.add(1, ourPlayer);
-                System.out.println("Our Heatmap: " + ourPlayer.getName());
+                // TODO: implement getHeatmapName method in Pointchoiceplayer
                 for (String factory : factories.keySet()) {
                     System.out.println("Current Factory: " + factory);
 
