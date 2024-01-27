@@ -220,6 +220,9 @@ public class NewGame {
           }
         } catch (Exception ex) {
           System.out.println("E004:" + minimizer.getName() + " threw a " + ex.getClass() + " exception!");
+          // print stack printStackTrace
+          System.out.println("Stack trace:");
+          ex.printStackTrace();
           throw new NewInvalidMoveException(minimizer);
         }
         timeMinimizer += System.nanoTime() - moveStartTime;

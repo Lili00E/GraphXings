@@ -86,7 +86,6 @@ public class GameState {
       return false;
     }
     if (usedCoordinates[x][y] != 0) {
-
       return false;
     }
     return true;
