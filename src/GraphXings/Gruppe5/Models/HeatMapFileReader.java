@@ -9,6 +9,28 @@ import GraphXings.Gruppe5.Utils.WeightedNumberGenerator;
 
 public class HeatMapFileReader {
 
+    public ArrayList<HeatMap> readAllFromDir(String dirPath) throws RuntimeException {
+        File heatMapDir = new File(dirPath);
+
+        File[] files = heatMapDir.listFiles();
+
+        var heatMaps = new ArrayList<HeatMap>();
+        if (files != null) {
+            for (File file : files) {
+                try {
+
+                    heatMaps.add(new HeatMapFileReader().readFromFile(file.getPath()));
+                } catch (FileNotFoundException e) {
+                    throw new RuntimeException("Error reading heatmap file");
+                }
+            }
+        } else {
+
+            throw new RuntimeException("Error Reading Dir");
+        }
+        return heatMaps;
+    }
+
     public HeatMap readFromFile(String fileName) throws FileNotFoundException {
         final double epsilon = 0.01;
         try {
@@ -39,7 +61,7 @@ public class HeatMapFileReader {
 
             }
             scanner.close();
-            return new HeatMap(new WeightedNumberGenerator(weights), width, height);
+            return new HeatMap(new WeightedNumberGenerator(weights), width, height, fileName);
 
         } catch (FileNotFoundException e) {
             System.out.println("An error occurred.");

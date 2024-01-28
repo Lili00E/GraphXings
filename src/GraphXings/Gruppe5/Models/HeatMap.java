@@ -13,6 +13,7 @@ public class HeatMap {
 
   private int width;
   private int height;
+  public String name;
 
   public int getWidth() {
     return width;
@@ -22,10 +23,11 @@ public class HeatMap {
     return height;
   }
 
-  public HeatMap(WeightedNumberGenerator generator, int width, int height) {
+  public HeatMap(WeightedNumberGenerator generator, int width, int height, String name) {
     this.generator = generator;
     this.width = width;
     this.height = height;
+    this.name = name;
 
     if (width == 0 || height == 0) {
       System.out.println("ERROR invalid HeatMap detected...");

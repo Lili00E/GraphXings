@@ -7,8 +7,10 @@ import GraphXings.Game.GameInstance.RandomCycleFactory;
 import GraphXings.Game.League.NewLeague;
 import GraphXings.Game.League.NewLeagueResult;
 import GraphXings.Game.Match.NewMatch;
+import GraphXings.Gruppe10.LighthousePlayer;
 import GraphXings.GraphXings;
 import GraphXings.Gruppe8.EfficientWinningPlayer;
+import GraphXings.Gruppe5.Models.HeatMap;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
 import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
@@ -27,18 +29,18 @@ import java.util.logging.FileHandler;
 
 import static GraphXings.GraphXings.runLeague;
 
+import java.io.File;
+
 public class RunTest {
+
   public static void main(String[] args) throws IOException {
     long timeLimit = 300000000000l;
-    long seed = 1;
-    int bestOf = 1;
+    long seed = 257375;
+    int bestOf = 3;
     java.util.logging.Logger logger = java.util.logging.Logger.getLogger("TestRun");
     FileHandler fileHandler = new FileHandler("status.log");
     logger.addHandler(fileHandler);
 
-    // logger.info("This is an info message");
-    // logger.severe("This is an error message"); // == ERROR
-    // logger.fine("Here is a debug message"); // == DEBUG
     var csvWriter = new CSVWriter(new ArrayList<String>() {
       {
         add("our_player_name");
@@ -52,28 +54,30 @@ public class RunTest {
       }
     });
 
-    // Heatmaps
-    var smallHeatMapMin = new HeatMapFileReader()
-        .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_2.txt");
-    var smallHeatMapMax = new HeatMapFileReader()
-        .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_3.txt");
+    var reader = new HeatMapFileReader();
+    var minHeatMaps = reader.readAllFromDir("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min");
+    var maxHeatMaps = reader.readAllFromDir("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max");
 
-    // our Players
-    NewPlayer smallHeatmapPlayer = new PointChoicePlayer("SmallHeatmap", new HeatMapChoiceStrategy(smallHeatMapMin),
-        new HeatMapChoiceStrategy(smallHeatMapMax));
+    var numHeatMaps = Math.max(minHeatMaps.size(), maxHeatMaps.size());
     ArrayList<NewPlayer> ourPlayers = new ArrayList<>();
-    ourPlayers.add(smallHeatmapPlayer);
+    for (var i = 0; i < numHeatMaps; i++) {
+      var minHeatMap = minHeatMaps.get(Math.min(minHeatMaps.size() - 1, i));
+      var maxHeatMap = maxHeatMaps.get(Math.min(maxHeatMaps.size() - 1, i));
+      var player = new PointChoicePlayer(minHeatMap.name + ":" + maxHeatMap.name, new HeatMapChoiceStrategy(minHeatMap),
+          new HeatMapChoiceStrategy(maxHeatMap));
+      ourPlayers.add(player);
+    }
 
     // other Players
     ArrayList<NewPlayer> gameGruppe8 = new ArrayList<>();
     gameGruppe8.add(0, new EfficientWinningPlayer("Gruppe 8"));
 
-    // ArrayList<NewPlayer> gameGruppe10 = new ArrayList<>();
-    // gameGruppe10.add(0, new LighthousePlayer());
+    ArrayList<NewPlayer> gameGruppe10 = new ArrayList<>();
+    gameGruppe10.add(0, new LighthousePlayer());
 
     ArrayList<ArrayList<NewPlayer>> competitorGroups = new ArrayList<>();
     competitorGroups.add(gameGruppe8);
-    // listOfCompetitors.add(gameGruppe10);
+    competitorGroups.add(gameGruppe10);
 
     // Match Types
     ArrayList<NewMatch.MatchType> matchTypes = new ArrayList<>();
@@ -86,24 +90,23 @@ public class RunTest {
     df.setTimeZone(tz);
     String nowAsISO = df.format(new Date());
     matchTypes.add(angles);
-    // matchTypes.add(crossings);
+    matchTypes.add(crossings);
 
-    // Factories
     HashMap<String, GameInstanceFactory> factories = new HashMap<>();
 
     PlanarGameInstanceFactory planarTriangulation = new PlanarGameInstanceFactory(seed);
     RandomCycleFactory cycleNoMatching = new RandomCycleFactory(seed, false);
     RandomCycleFactory cycleMatching = new RandomCycleFactory(seed, true);
-
     factories.put("planarTriangulation", planarTriangulation);
-    // factories.put("cycleMatching", cycleMatching);
-    // factories.put("cycleNoMatching", cycleNoMatching);
+    factories.put("cycleMatching", cycleMatching);
+    factories.put("cycleNoMatching", cycleNoMatching);
+
     for (ArrayList<NewPlayer> competitorGroup : competitorGroups) {
       for (NewPlayer competitorPlayer : competitorGroup) {
         System.out.println("Competitor: " + competitorPlayer.getName());
 
         for (NewPlayer ourPlayer : ourPlayers) {
-          // TODO: implement getHeatmapName method in Pointchoiceplayer
+
           for (String factory : factories.keySet()) {
             System.out.println("Current Factory: " + factory);
             var game = factories.get(factory).getGameInstance();
@@ -118,6 +121,7 @@ public class RunTest {
               var factoryInstance = factories.get(factory);
               NewLeague l = new NewLeague(players, bestOf, timeLimit, factoryInstance, matchType, seed);
               NewLeagueResult lr = l.runLeague();
+
               String[] row = {
                   ourPlayer.getName(),
                   competitorPlayer.getName(),
