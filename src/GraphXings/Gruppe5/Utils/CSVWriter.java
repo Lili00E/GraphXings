@@ -1,5 +1,8 @@
 package GraphXings.Gruppe5.Utils;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class CSVWriter {
@@ -8,6 +11,7 @@ public class CSVWriter {
 
   public CSVWriter(ArrayList<String> colNames) {
     this.colNames = colNames;
+    this.data = new ArrayList<>();
   }
 
   public void append(String[] row) {
@@ -44,7 +48,23 @@ public class CSVWriter {
     deleteCol(index);
   }
 
-  public void writeToFile(String path) {
+  public void addColumn(String colName, ArrayList<String> data) {
+    assert data.size() == this.data.size();
+    colNames.add(colName);
+    for (int i = 0; i < data.size(); i++) {
+      this.data.get(i)[colNames.size() - 1] = data.get(i);
+    }
+  }
+
+  public void writeToFile(String path) throws IOException {
+    var file = new File(path);
+    file.createNewFile();
+    var writer = new FileWriter(path);
+    writer.append(String.join(";", colNames) + "\n");
+    for (String[] row : data) {
+      writer.append(String.join(";", row) + "\n");
+    }
+    writer.close();
   }
 
 }
