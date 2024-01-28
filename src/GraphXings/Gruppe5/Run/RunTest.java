@@ -128,7 +128,7 @@ public class RunTest {
                   matchType.name(),
                   lr.getScore(ourPlayer) + ":" + lr.getScore(competitorPlayer),
               };
-              csvWriter.append(row);
+              csvWriter.write(row);
             }
           }
         }

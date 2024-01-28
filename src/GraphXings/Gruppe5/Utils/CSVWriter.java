@@ -14,7 +14,7 @@ public class CSVWriter {
     this.data = new ArrayList<>();
   }
 
-  public void append(String[] row) {
+  public void write(String[] row) {
 
     assert row.length == colNames.size();
     data.add(row);
