@@ -14,6 +14,7 @@ import GraphXings.Game.League.NewLeague;
 import GraphXings.Game.League.NewLeagueResult;
 import GraphXings.Game.Match.NewMatch;
 import GraphXings.Game.Match.NewMatchResult;
+import GraphXings.Gruppe10.LighthousePlayer;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
@@ -22,18 +23,55 @@ import GraphXings.Gruppe8.EfficientWinningPlayer;
 
 public class GraphXings {
     public static void main(String[] args) throws FileNotFoundException {
-        var smallHeatMapMin = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMin.txt");
-        var smallHeatMapMax = new HeatMapFileReader()
-                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/SmallHeatMapMax.txt");
+        // Heatmaps
+        var Max_HeatMap_1 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_HeatMap_1.txt");
+        var Min_HeatMap_2 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_HeatMap_2.txt");
+        var Max_HeatMap_3 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_HeatMap_3.txt");
+        var Max_HeatMap_4 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_HeatMap_4.txt");
+        var Min_HeatMap_5 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_HeatMap_5.txt");
+        var Both_HeatMap_6 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Both_HeatMap_6.txt");
+        var Max_Heatmap_7 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_Heatmap_7.txt");
+        var Max_Heatmap_8 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_Heatmap_8.txt");
+        var Min_Heatmap_9 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_Heatmap_9.txt");
+        var Min_Heatmap_10 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_Heatmap_10.txt");
+        var Max_Heatmap_11 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_Heatmap_11.txt");
+        var Min_Heatmap_12 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_Heatmap_12.txt");
+        var Min_Heatmap_13 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_Heatmap_13.txt");
+        var Min_Heatmap_14 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Min/Min_Heatmap_14.txt");
+        var Max_Heatmap_15 = new HeatMapFileReader()
+                .readFromFile("./GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_Heatmap_15.txt");
+
 
         ArrayList<NewPlayer> players = new ArrayList<>();
-        players.add(new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
-                new HeatMapChoiceStrategy(smallHeatMapMax)));
-        players.add(new EfficientWinningPlayer("Gruppe 8"));
+        players.add(new PointChoicePlayer("Max Heatmap 3", new HeatMapChoiceStrategy(Min_HeatMap_5),
+                new HeatMapChoiceStrategy(Max_HeatMap_3)));
+        players.add(new PointChoicePlayer("Max Heatmap 1", new HeatMapChoiceStrategy(Min_HeatMap_5),
+                new HeatMapChoiceStrategy(Max_HeatMap_1)));
+        players.add(new PointChoicePlayer("Max Heatmap 7", new HeatMapChoiceStrategy(Min_HeatMap_5),
+                new HeatMapChoiceStrategy(Max_Heatmap_7)));
+        players.add(new PointChoicePlayer("Max Heatmap 8", new HeatMapChoiceStrategy(Min_HeatMap_5),
+                new HeatMapChoiceStrategy(Max_Heatmap_8)));
+        players.add(new PointChoicePlayer("Max Heatmap 15", new HeatMapChoiceStrategy(Min_HeatMap_5),
+                new HeatMapChoiceStrategy(Max_Heatmap_15)));
+//        players.add(new EfficientWinningPlayer("Gruppe 8"));
+//        players.add(new LighthousePlayer());
 //        players.add(new RecursiveSearchPlayer("Recursive Search", 5, 100, 100, 20000));
         long timeLimit = 300000000000l;
-        long seed = 27081883;
+        long seed = 28061914;
         int bestOf = 3;
         NewMatch.MatchType matchType = NewMatch.MatchType.CROSSING_ANGLE;
         PlanarGameInstanceFactory factory = new PlanarGameInstanceFactory(seed);
