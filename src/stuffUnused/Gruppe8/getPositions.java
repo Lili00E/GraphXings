@@ -1,4 +1,5 @@
-package GraphXings.Gruppe8;
+package stuffUnused.Gruppe8;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 
@@ -6,18 +7,17 @@ import GraphXings.Data.Coordinate;
 import java.util.List;
 import java.util.Queue;
 
-
-
 public class getPositions {
-    public static Coordinate getNextFreeCoordinate(Coordinate inputCoordinate, int[][] usedCoordinates, int width, int height) {
+    public static Coordinate getNextFreeCoordinate(Coordinate inputCoordinate, int[][] usedCoordinates, int width,
+            int height) {
         boolean[][] visited = new boolean[width][height];
         Queue<Coordinate> queue = new LinkedList<>();
 
         queue.add(inputCoordinate);
         visited[inputCoordinate.getX()][inputCoordinate.getY()] = true;
 
-        int[] dx = {0, 0, 1, -1};
-        int[] dy = {1, -1, 0, 0};
+        int[] dx = { 0, 0, 1, -1 };
+        int[] dy = { 1, -1, 0, 0 };
 
         while (!queue.isEmpty()) {
 

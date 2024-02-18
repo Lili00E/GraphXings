@@ -24,19 +24,19 @@ public class NewGame {
   /**
    * The objective function of the game.
    */
-  private Objective objective;
+  protected Objective objective;
   /**
    * The width of the game board.
    */
-  private int width;
+  protected int width;
   /**
    * The height of the game board.
    */
-  private int height;
+  protected int height;
   /**
    * The graph to be drawn.
    */
-  private Graph g;
+  protected Graph g;
   /**
    * The first player.
    */
@@ -48,7 +48,7 @@ public class NewGame {
   /**
    * The time limit for players.
    */
-  private long timeLimit;
+  protected long timeLimit;
 
   /**
    * Instantiates a game of GraphXings.
@@ -157,7 +157,7 @@ public class NewGame {
    * @return The score yielded by the final drawing.
    * @throws InvalidMoveException An exception caused by cheating.
    */
-  private double playRound(NewPlayer maximizer, NewPlayer minimizer)
+  public double playRound(NewPlayer maximizer, NewPlayer minimizer)
       throws NewInvalidMoveException, NewTimeOutException {
     int turn = 0;
     GameState gs = new GameState(g, width, height);

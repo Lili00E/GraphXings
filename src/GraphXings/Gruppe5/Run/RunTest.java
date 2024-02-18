@@ -9,12 +9,12 @@ import GraphXings.Game.League.NewLeagueResult;
 import GraphXings.Game.Match.NewMatch;
 import GraphXings.Gruppe10.LighthousePlayer;
 import GraphXings.GraphXings;
-import GraphXings.Gruppe8.EfficientWinningPlayer;
 import GraphXings.Gruppe5.Models.HeatMap;
 import GraphXings.Gruppe5.Models.HeatMapFileReader;
 import GraphXings.Gruppe5.Players.PointChoicePlayer;
 import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
 import GraphXings.Gruppe5.Utils.CSVWriter;
+import stuffUnused.Gruppe8.EfficientWinningPlayer;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -35,7 +35,7 @@ public class RunTest {
 
   public static void main(String[] args) throws IOException {
     long timeLimit = 300000000000l;
-    long seed = 257375;
+    long seed = 2571;
     int bestOf = 3;
     java.util.logging.Logger logger = java.util.logging.Logger.getLogger("TestRun");
     FileHandler fileHandler = new FileHandler("status.log");
@@ -72,12 +72,12 @@ public class RunTest {
     ArrayList<NewPlayer> gameGruppe8 = new ArrayList<>();
     gameGruppe8.add(0, new EfficientWinningPlayer("Gruppe 8"));
 
-    ArrayList<NewPlayer> gameGruppe10 = new ArrayList<>();
-    gameGruppe10.add(0, new LighthousePlayer());
+    // ArrayList<NewPlayer> gameGruppe10 = new ArrayList<>();
+    // gameGruppe10.add(0, new LighthousePlayer());
 
     ArrayList<ArrayList<NewPlayer>> competitorGroups = new ArrayList<>();
     competitorGroups.add(gameGruppe8);
-    competitorGroups.add(gameGruppe10);
+    // competitorGroups.add(gameGruppe10);
 
     // Match Types
     ArrayList<NewMatch.MatchType> matchTypes = new ArrayList<>();

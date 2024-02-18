@@ -1,4 +1,4 @@
-package GraphXings.Gruppe8;
+package stuffUnused.Gruppe8;
 
 import GraphXings.Algorithms.CrossingCalculator;
 import GraphXings.Algorithms.NewPlayer;
@@ -68,29 +68,27 @@ public class EfficientWinningPlayer implements NewPlayer {
     }
 
     @Override
-	public GameMove maximizeCrossingAngles(GameMove lastMove)
-	{
-		// First: Apply the last move by the opponent.
-		if (lastMove != null) {
+    public GameMove maximizeCrossingAngles(GameMove lastMove) {
+        // First: Apply the last move by the opponent.
+        if (lastMove != null) {
             gs.applyMove(lastMove);
         }
         GameMove move = max(lastMove);
         gs.applyMove(move);
         return move;
-	}
+    }
 
-	@Override
-	public GameMove minimizeCrossingAngles(GameMove lastMove)
-	{
-		// First: Apply the last move by the opponent.
-		if (lastMove != null) {
+    @Override
+    public GameMove minimizeCrossingAngles(GameMove lastMove) {
+        // First: Apply the last move by the opponent.
+        if (lastMove != null) {
             gs.applyMove(lastMove);
         }
 
         GameMove move = min(lastMove);
         gs.applyMove(move);
         return move;
-	}
+    }
 
     @Override
     public GameMove maximizeCrossings(GameMove lastMove) {
@@ -156,28 +154,28 @@ public class EfficientWinningPlayer implements NewPlayer {
     }
 
     // private GameMove powerRandomMove(int xCoord, int yCoord) {
-    //     // System.err.println("rand");
-    //     int stillToBePlaced = g.getN() - gs.getPlacedVertices().size();
-    //     int next = r.nextInt(stillToBePlaced);
-    //     int skipped = 0;
-    //     Vertex v = null;
-    //     for (Vertex u : g.getVertices()) {
-    //         if (!gs.getPlacedVertices().contains(u)) {
-    //             if (skipped < next) {
-    //                 skipped++;
-    //                 continue;
-    //             }
-    //             v = u;
-    //             break;
-    //         }
-    //     }
-    //     Coordinate c;
-    //     do {
-    //         xCoord = xCoord + 1;
-    //         yCoord = yCoord + 1;
-    //         c = new Coordinate(xCoord, yCoord);
-    //     } while (gs.getUsedCoordinates()[c.getX()][c.getY()] != 0);
-    //     return new GameMove(v, c);
+    // // System.err.println("rand");
+    // int stillToBePlaced = g.getN() - gs.getPlacedVertices().size();
+    // int next = r.nextInt(stillToBePlaced);
+    // int skipped = 0;
+    // Vertex v = null;
+    // for (Vertex u : g.getVertices()) {
+    // if (!gs.getPlacedVertices().contains(u)) {
+    // if (skipped < next) {
+    // skipped++;
+    // continue;
+    // }
+    // v = u;
+    // break;
+    // }
+    // }
+    // Coordinate c;
+    // do {
+    // xCoord = xCoord + 1;
+    // yCoord = yCoord + 1;
+    // c = new Coordinate(xCoord, yCoord);
+    // } while (gs.getUsedCoordinates()[c.getX()][c.getY()] != 0);
+    // return new GameMove(v, c);
     // }
 
     public boolean hasOnlyFreeNeighbours(HashSet<Vertex> neighbors) {
@@ -198,41 +196,42 @@ public class EfficientWinningPlayer implements NewPlayer {
 
         if (lastMove != null) {
             Vertex lastVertex = lastMove.getVertex();
-                Vertex notPlacVertex = null;
-                // HashMap<Vertex, HashSet<Vertex>> newVertexList = new HashMap<Vertex, HashSet<Vertex>>();
-                for (Vertex v : gs.getPlacedVertices()) {
-                    Set<Vertex> neigh = getNeighbors(v);
-                    for (Vertex vv : neigh) {
-                        if (!gs.getPlacedVertices().contains(vv)) {
-                            lastVertex = v;
-                            notPlacVertex = vv;
-                            break;
-                        }
+            Vertex notPlacVertex = null;
+            // HashMap<Vertex, HashSet<Vertex>> newVertexList = new HashMap<Vertex,
+            // HashSet<Vertex>>();
+            for (Vertex v : gs.getPlacedVertices()) {
+                Set<Vertex> neigh = getNeighbors(v);
+                for (Vertex vv : neigh) {
+                    if (!gs.getPlacedVertices().contains(vv)) {
+                        lastVertex = v;
+                        notPlacVertex = vv;
+                        break;
                     }
                 }
+            }
 
-                if (notPlacVertex == null) {
-                    for (Vertex v : g.getVertices()) {
-                        if (!gs.getPlacedVertices().contains(v)) {
-                            notPlacVertex = v;
-                            break;
-                        }
+            if (notPlacVertex == null) {
+                for (Vertex v : g.getVertices()) {
+                    if (!gs.getPlacedVertices().contains(v)) {
+                        notPlacVertex = v;
+                        break;
                     }
                 }
-                Coordinate c = getCoordinateOfVertex(lastVertex);
-                // System.out.println(c.getX() + " " + c.getY());
-                getPositions pos = new getPositions();
-                Coordinate coords = pos.getNextFreeCoordinate(c, gs.getUsedCoordinates(), width, height);
-                // System.out.println(coords.size() + "sizzze");
-                GameMove newMove = new GameMove(notPlacVertex, coords);
+            }
+            Coordinate c = getCoordinateOfVertex(lastVertex);
+            // System.out.println(c.getX() + " " + c.getY());
+            getPositions pos = new getPositions();
+            Coordinate coords = pos.getNextFreeCoordinate(c, gs.getUsedCoordinates(), width, height);
+            // System.out.println(coords.size() + "sizzze");
+            GameMove newMove = new GameMove(notPlacVertex, coords);
 
-                if (gs.checkMoveValidity(newMove)) {
-                    // System.out.println("min first");
-                    return newMove;
-                } else {
-                    // System.out.println("min rand");
-                    return randomMove();
-                }
+            if (gs.checkMoveValidity(newMove)) {
+                // System.out.println("min first");
+                return newMove;
+            } else {
+                // System.out.println("min rand");
+                return randomMove();
+            }
         }
 
         // System.out.println("not here min");
@@ -275,7 +274,8 @@ public class EfficientWinningPlayer implements NewPlayer {
                 }
                 Coordinate c = getCoordinateOfVertex(lastVertex);
                 // DensityFinder densityRegionsFinder = new DensityFinder();
-                // Coordinate newCoordinate = densityRegionsFinder.findCoordinateInMaxDensityRegion(gs.getUsedCoordinates());
+                // Coordinate newCoordinate =
+                // densityRegionsFinder.findCoordinateInMaxDensityRegion(gs.getUsedCoordinates());
 
                 Coordinate mirrorCoordinate = farthestPoint(c);
                 GameMove newMove = new GameMove(notPlacVertex, mirrorCoordinate);
@@ -283,8 +283,8 @@ public class EfficientWinningPlayer implements NewPlayer {
                 // Random random = new Random();
                 // int randInt = random.nextInt(10);
                 // if (randInt % 5 == 0) {
-                //     Set<GameMove> possibleGameMoves = createPossibleMoves(lastVertex);
-                //     newMove = testMaxBrut(possibleGameMoves);
+                // Set<GameMove> possibleGameMoves = createPossibleMoves(lastVertex);
+                // newMove = testMaxBrut(possibleGameMoves);
                 // }
 
                 if (gs.checkMoveValidity(newMove)) {
@@ -292,7 +292,8 @@ public class EfficientWinningPlayer implements NewPlayer {
                     return newMove;
                 } else {
                     getPositions positions = new getPositions();
-                    Coordinate coords = positions.getNextFreeCoordinate(mirrorCoordinate, gs.getUsedCoordinates(), width, height);
+                    Coordinate coords = positions.getNextFreeCoordinate(mirrorCoordinate, gs.getUsedCoordinates(),
+                            width, height);
                     newMove = new GameMove(notPlacVertex, coords);
 
                     if (gs.checkMoveValidity(newMove)) {
@@ -337,7 +338,7 @@ public class EfficientWinningPlayer implements NewPlayer {
         int mirroredY = Math.min(c.getY(), fieldHeight / 2);
         return new Coordinate(mirroredX, mirroredY);
     }
-    
+
     public Coordinate topRightPoint(Coordinate c) {
         int fieldHeight = height;
         int fieldWidth = width;
@@ -345,7 +346,7 @@ public class EfficientWinningPlayer implements NewPlayer {
         int mirroredY = Math.min(c.getY(), fieldHeight / 2);
         return new Coordinate(mirroredX, mirroredY);
     }
-    
+
     public Coordinate bottomLeftPoint(Coordinate c) {
         int fieldHeight = height;
         int fieldWidth = width;
@@ -353,7 +354,7 @@ public class EfficientWinningPlayer implements NewPlayer {
         int mirroredY = Math.max(c.getY(), fieldHeight / 2);
         return new Coordinate(mirroredX, mirroredY);
     }
-    
+
     public Coordinate bottomRightPoint(Coordinate c) {
         int fieldHeight = height;
         int fieldWidth = width;
@@ -361,7 +362,6 @@ public class EfficientWinningPlayer implements NewPlayer {
         int mirroredY = Math.max(c.getY(), fieldHeight / 2);
         return new Coordinate(mirroredX, mirroredY);
     }
-    
 
     private Set<GameMove> createPossibleMoves(Vertex lastVertex) {
         Coordinate lastVertexCoordinate = getCoordinateOfVertex(lastVertex);
@@ -381,7 +381,7 @@ public class EfficientWinningPlayer implements NewPlayer {
         possibleGameMoves.add(randomMove());
         possibleGameMoves.add(randomMove());
         possibleGameMoves.add(randomMove());
-        
+
         return possibleGameMoves;
 
     }
@@ -389,7 +389,7 @@ public class EfficientWinningPlayer implements NewPlayer {
     public Coordinate mirrorPoint(Coordinate c) {
         int fieldHeight = height;
         int fieldWidth = width;
-    
+
         int mirroredX = (fieldWidth - 1) - c.getX();
         int mirroredY = (fieldHeight - 1) - c.getY();
         return new Coordinate(mirroredX, mirroredY);
@@ -398,28 +398,27 @@ public class EfficientWinningPlayer implements NewPlayer {
     public Coordinate farthestPoint(Coordinate c) {
         int fieldHeight = height;
         int fieldWidth = width;
-    
+
         int farthestX, farthestY;
-    
+
         if (c.getX() <= fieldWidth / 2) {
             farthestX = fieldWidth - 1;
         } else {
             farthestX = 0;
         }
-    
+
         if (c.getY() <= fieldHeight / 2) {
             farthestY = fieldHeight - 1;
         } else {
             farthestY = 0;
         }
-    
+
         return new Coordinate(farthestX, farthestY);
     }
-    
 
     public Coordinate mirrorPointMax(Coordinate c) {
-        int fieldHeight = height; 
-        int fieldWidth = width; 
+        int fieldHeight = height;
+        int fieldWidth = width;
 
         int farthestX, farthestY;
 
@@ -439,7 +438,6 @@ public class EfficientWinningPlayer implements NewPlayer {
 
         return new Coordinate(farthestX, farthestY);
     }
-    
 
     private Vertex getVertexWithMostIndicentEdges(Vertex lastVertex) {
         Vertex besVertex = null;
@@ -474,9 +472,9 @@ public class EfficientWinningPlayer implements NewPlayer {
 
         int estimatedSize = (edges instanceof Collection) ? ((Collection) edges).size() : 16;
 
-        return StreamSupport.stream(edges.spliterator(), false) 
-                            .map(e -> e.getS().equals(v) ? e.getT() : e.getS())
-                            .collect(Collectors.toCollection(() -> new HashSet<>(estimatedSize)));
+        return StreamSupport.stream(edges.spliterator(), false)
+                .map(e -> e.getS().equals(v) ? e.getT() : e.getS())
+                .collect(Collectors.toCollection(() -> new HashSet<>(estimatedSize)));
     }
 
     public int getSizeOfIterable(Iterable<Edge> edges) {
@@ -504,46 +502,50 @@ public class EfficientWinningPlayer implements NewPlayer {
         return count;
     }
     // private GameMove maxBrutGameMove() {
-    //     int iterations = width * height;
+    // int iterations = width * height;
 
-    //     if (iterations > 4000000) {
-    //         iterations = 4000000;
-    //     }
+    // if (iterations > 4000000) {
+    // iterations = 4000000;
+    // }
 
-    //     int max = Integer.MIN_VALUE;
-    //     GameMove randGameMove = new GameMove(null, null);
-    //     GameMove bestMove = randomMove();
-    //     for (int i = 0; i < iterations; i++) {
-    //         randGameMove = randomMove();
-    //         HashMap<Vertex, Coordinate> vertexCoordinates = new HashMap<>(gs.getVertexCoordinates());
-    //         vertexCoordinates.put(randGameMove.getVertex(), randGameMove.getCoordinate());
-    //         CrossingCalculator crossingCalculator = new CrossingCalculator(g, vertexCoordinates);
-    //         int number = crossingCalculator.computeCrossingNumber();
+    // int max = Integer.MIN_VALUE;
+    // GameMove randGameMove = new GameMove(null, null);
+    // GameMove bestMove = randomMove();
+    // for (int i = 0; i < iterations; i++) {
+    // randGameMove = randomMove();
+    // HashMap<Vertex, Coordinate> vertexCoordinates = new
+    // HashMap<>(gs.getVertexCoordinates());
+    // vertexCoordinates.put(randGameMove.getVertex(),
+    // randGameMove.getCoordinate());
+    // CrossingCalculator crossingCalculator = new CrossingCalculator(g,
+    // vertexCoordinates);
+    // int number = crossingCalculator.computeCrossingNumber();
 
-    //         if (number > max) {
-    //             max = number;
-    //             bestMove = randGameMove;
-    //         }
+    // if (number > max) {
+    // max = number;
+    // bestMove = randGameMove;
+    // }
 
-    //     }
+    // }
 
-    //     return bestMove;
+    // return bestMove;
     // }
 
     private GameMove testMaxBrut(Set<GameMove> possibleMoves) {
         AtomicInteger max = new AtomicInteger(Integer.MIN_VALUE);
         AtomicReference<GameMove> bestMove = new AtomicReference<>(null);
-    
+
         possibleMoves.parallelStream().forEach(move -> {
             HashMap<Vertex, Coordinate> vertexCoordinates = new HashMap<>(gs.getVertexCoordinates());
             vertexCoordinates.put(move.getVertex(), move.getCoordinate());
 
             // SweepLineIntersection sweepLineIntersection = new SweepLineIntersection();
-            // int number = sweepLineIntersection.computeCrossingNumber(g, vertexCoordinates);
+            // int number = sweepLineIntersection.computeCrossingNumber(g,
+            // vertexCoordinates);
 
             CrossingCalculator crossingCalculator = new CrossingCalculator(g, vertexCoordinates);
             int number = crossingCalculator.computeCrossingNumber();
-    
+
             synchronized (this) {
                 if (number > max.get()) {
                     // System.out.println(number);
@@ -552,10 +554,9 @@ public class EfficientWinningPlayer implements NewPlayer {
                 }
             }
         });
-    
+
         return bestMove.get();
     }
-    
 
     private GameMove maxBrutGameMove(int amountIterations) {
         int field = width * height / 2;
@@ -571,8 +572,10 @@ public class EfficientWinningPlayer implements NewPlayer {
             int number = crossingCalculator.computeCrossingNumber();
 
             // SweepLineIntersection sweepLineIntersection = new SweepLineIntersection();
-            // int number = sweepLineIntersection.computeCrossingNumber(g, vertexCoordinates);
-            // EfficientCrossingCalculator efficientCrossingCalculator = new EfficientCrossingCalculator(g, vertexCoordinates);
+            // int number = sweepLineIntersection.computeCrossingNumber(g,
+            // vertexCoordinates);
+            // EfficientCrossingCalculator efficientCrossingCalculator = new
+            // EfficientCrossingCalculator(g, vertexCoordinates);
             // int number = efficientCrossingCalculator.computeCrossingNumber();
 
             synchronized (bestMove) {
@@ -600,9 +603,11 @@ public class EfficientWinningPlayer implements NewPlayer {
             int number = crossingCalculator.computeCrossingNumber();
 
             // SweepLineIntersection sweepLineIntersection = new SweepLineIntersection();
-            // int number = sweepLineIntersection.computeCrossingNumber(g, vertexCoordinates);
+            // int number = sweepLineIntersection.computeCrossingNumber(g,
+            // vertexCoordinates);
 
-            // EfficientCrossingCalculator efficientCrossingCalculator = new EfficientCrossingCalculator(g, vertexCoordinates);
+            // EfficientCrossingCalculator efficientCrossingCalculator = new
+            // EfficientCrossingCalculator(g, vertexCoordinates);
             // int number = efficientCrossingCalculator.computeCrossingNumber();
 
             synchronized (bestMove) {
@@ -616,24 +621,23 @@ public class EfficientWinningPlayer implements NewPlayer {
         return bestMove.get();
     }
 
-public class Pair<K, V> {
-    private K key;
-    private V value;
+    public class Pair<K, V> {
+        private K key;
+        private V value;
 
-    public Pair(K key, V value) {
-        this.key = key;
-        this.value = value;
+        public Pair(K key, V value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public K getKey() {
+            return key;
+        }
+
+        public V getValue() {
+            return value;
+        }
     }
-
-    public K getKey() {
-        return key;
-    }
-
-    public V getValue() {
-        return value;
-    }
-}
-
 
     @Override
     public String getName() {

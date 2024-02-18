@@ -1,4 +1,3 @@
-package GraphXings.Gruppe5.GUI;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -70,7 +69,7 @@ public class GuiGameDisplay extends JFrame {
         this.turn = turn;
         this.turnTracker.put(newMove.getVertex(), turn);
         this.graph = graph;
-        repaint();
+
     }
 
     @Override

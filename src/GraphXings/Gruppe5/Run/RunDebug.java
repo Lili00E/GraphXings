@@ -16,7 +16,7 @@ import GraphXings.Gruppe5.Players.PointChoicePlayer;
 import GraphXings.Gruppe5.PointStrategies.HeatMapChoiceStrategy;
 import GraphXings.Gruppe5.Utils.SpecificRandomCycleFactory;
 import GraphXings.Gruppe5.Utils.VsBar;
-import GraphXings.Gruppe8.EfficientWinningPlayer;
+import stuffUnused.Gruppe8.EfficientWinningPlayer;
 
 public class RunDebug {
   public static void main(String[] args) {

@@ -6,6 +6,13 @@
   "configurations": [
     {
       "type": "java",
+      "name": "RunGui",
+      "request": "launch",
+      "mainClass": "RunGui",
+      "projectName": "GraphXings_44c64d67"
+    },
+    {
+      "type": "java",
       "name": "RunTest",
       "request": "launch",
       "mainClass": "GraphXings.Gruppe5.Run.RunTest",
