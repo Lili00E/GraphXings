@@ -97,9 +97,9 @@ public class GuiGameDisplay extends JFrame {
             double new_y = coords.getY() - vertexSize / 2.0;
             Ellipse2D.Double point = new Ellipse2D.Double(new_x, new_y, vertexSize, vertexSize);
             if (turn % 2 == 0) // maximizer
-                g2.setPaint(Color.RED);
+                g2.setPaint(Color.decode("#38b6ff"));
             else
-                g2.setPaint(Color.BLUE);
+                g2.setPaint(Color.decode("#ff66c4"));
 
             g2.drawString(turn.toString(), (int) new_x, (int) new_y);
             // g2.fill(point);
@@ -122,7 +122,7 @@ public class GuiGameDisplay extends JFrame {
                     RationalComputer.getValue(s.getStartY()),
                     RationalComputer.getValue(s.getEndX()), RationalComputer.getValue(s.getEndY()));
 
-            g2.setPaint(Color.MAGENTA);
+            g2.setPaint(Color.decode("#9f9f9f"));
             g2.draw(segment);
 
         }

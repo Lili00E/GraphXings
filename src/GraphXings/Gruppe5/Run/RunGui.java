@@ -17,7 +17,7 @@ public class RunGui {
 
         public static void main(String[] args) {
 
-                int numNodes = 50;
+                int numNodes = 1000;
                 int width = 1000;
                 int height = 1000;
                 var randomFactory = new SpecificRandomCycleFactory(numNodes, width, height);
@@ -29,9 +29,9 @@ public class RunGui {
                                 + gameInstance.getHeight());
                 try {
                         var smallHeatMapMin = new HeatMapFileReader()
-                                        .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/Min_Heatmap_2.txt");
+                                        .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_Heatmap_15.txt");
                         var smallHeatMapMax = new HeatMapFileReader()
-                                        .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/Max_Heatmap_1.txt");
+                                        .readFromFile("./src/GraphXings/Gruppe5/PointStrategies/HeatMaps/HeatMap_Max/Max_Heatmap_8.txt");
 
                         var player1 = new PointChoicePlayer("My Player", new HeatMapChoiceStrategy(smallHeatMapMin),
                                         new HeatMapChoiceStrategy(smallHeatMapMax));
