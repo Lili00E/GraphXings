@@ -1,3 +1,4 @@
+package GraphXings.Gruppe5.GUI;
 
 import GraphXings.Algorithms.CrossingCalculator;
 import GraphXings.Algorithms.NewPlayer;
@@ -8,13 +9,15 @@ import GraphXings.Game.NewGame;
 import GraphXings.Game.NewInvalidMoveException;
 import GraphXings.Game.NewTimeOutException;
 
+import static GraphXings.Game.NewGame.Objective.CROSSING_ANGLE;
+
 public class GuiGame extends NewGame {
 
     int turn = 0;
     GuiGameDisplay display;
 
     public GuiGame(Graph g, int width, int height, NewPlayer player1, NewPlayer player2) {
-        super(g, width, height, player1, player2);
+        super(g, width, height, player1, player2, NewGame.Objective.CROSSING_ANGLE, 300000000000L);
         this.display = new GuiGameDisplay(width, height);
     }
 
